@@ -30,6 +30,25 @@ export type ChatMessage = {
   sender: Pick<UserRecord, "id" | "username" | "displayName" | "rank" | "picture">;
 };
 
+export type RoomSummary = {
+  id: string;
+  slug: string;
+  name: string;
+  description: string;
+  category: string;
+  online: number;
+  members: number;
+  lastMessage: string;
+  lastMessageAt: string;
+};
+
+export type RoomMessage = {
+  id: string;
+  body: string;
+  createdAt: string;
+  sender: Pick<UserRecord, "id" | "username" | "displayName" | "rank" | "picture">;
+};
+
 export const defaultInterests = ["Football", "Music", "Tech", "Gaming", "Movies", "Fashion", "Campus", "Business", "Relationships", "Faith", "Memes", "Anime", "Sports"];
 
 function rankFor(interests: string[]) {
@@ -236,4 +255,76 @@ export async function createMessage(conversationId: string, senderId: string, bo
   });
   await prisma.conversation.update({ where: { id: conversationId }, data: { updatedAt: new Date() } });
   return message;
+}
+
+function toRoomMessagePayload(message: {
+  id: string;
+  body: string;
+  createdAt: Date;
+  sender: {
+    id: string;
+    username: string;
+    displayName: string;
+    rank: string;
+    picture: string | null;
+  };
+}): RoomMessage {
+  return {
+    id: message.id,
+    body: message.body,
+    createdAt: message.createdAt.toISOString(),
+    sender: {
+      id: message.sender.id,
+      username: message.sender.username,
+      displayName: message.sender.displayName,
+      rank: message.sender.rank,
+      picture: message.sender.picture,
+    },
+  };
+}
+
+export async function listRooms() {
+  const rooms = await prisma.room.findMany({
+    orderBy: { updatedAt: "desc" },
+    take: 6,
+    include: { messages: { orderBy: { createdAt: "desc" }, take: 1 } },
+  });
+  return rooms.map((room) => ({
+    id: room.id,
+    slug: room.slug,
+    name: room.name,
+    description: room.description,
+    category: room.category,
+    online: Math.max(0, room.messages.length * 12 + 24),
+    members: Math.max(0, room.messages.length * 100 + 200),
+    lastMessage: room.messages[0]?.body ?? "Say something to start the room.",
+    lastMessageAt: room.updatedAt.toISOString(),
+  })) satisfies RoomSummary[];
+}
+
+export async function getRoomBySlug(slug: string) {
+  const room = await prisma.room.findUnique({
+    where: { slug },
+    include: {
+      messages: { orderBy: { createdAt: "asc" }, include: { sender: true } },
+    },
+  });
+  return room;
+}
+
+export async function createRoomMessage(roomId: string, senderId: string, body: string) {
+  const message = await prisma.roomMessage.create({
+    data: { roomId, senderId, body },
+    include: { sender: true },
+  });
+  await prisma.room.update({ where: { id: roomId }, data: { updatedAt: new Date() } });
+  return toRoomMessagePayload(message);
+}
+
+export async function listRoomMessages(roomId: string) {
+  const room = await prisma.room.findUnique({
+    where: { id: roomId },
+    include: { messages: { orderBy: { createdAt: "asc" }, include: { sender: true } } },
+  });
+  return room?.messages.map(toRoomMessagePayload) ?? [];
 }

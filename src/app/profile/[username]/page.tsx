@@ -1,5 +1,6 @@
 import { AppShell } from "@/components/layout/app-shell";
 import { SectionHeading } from "@/components/section-heading";
+import Link from "next/link";
 import { getProfile } from "@/lib/api";
 import { notFound } from "next/navigation";
 import { headers } from "next/headers";
@@ -38,6 +39,14 @@ export default async function PublicProfilePage({ params }: Props) {
                   {interest}
                 </span>
               ))}
+            </div>
+            <div className="mt-6">
+              <Link
+                href={`/chats`}
+                className="inline-flex items-center justify-center rounded-full bg-[#e7f0f7] px-5 py-3 text-sm font-semibold text-[#163042]"
+              >
+                Message them
+              </Link>
             </div>
           </section>
         </div>

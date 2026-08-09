@@ -73,6 +73,20 @@ export type ChatMessage = {
   sender: Pick<AuthUser, "id" | "username" | "displayName" | "rank" | "picture">;
 };
 
+export type RoomSummary = {
+  id: string;
+  slug: string;
+  name: string;
+  description: string;
+  category: string;
+  online: number;
+  members: number;
+  lastMessage: string;
+  lastMessageAt: string;
+};
+
+export type RoomMessage = ChatMessage;
+
 export async function registerUser(input: {
   username: string;
   email: string;
@@ -153,4 +167,23 @@ export async function sendMessage(id: string, body: string) {
     method: "POST",
     json: { body },
   });
+}
+
+export async function getRooms() {
+  return request<{ rooms: RoomSummary[] }>("/api/rooms");
+}
+
+export async function getRoom(slug: string) {
+  return request<{ room: RoomSummary; messages: RoomMessage[] }>(`/api/rooms/${encodeURIComponent(slug)}`);
+}
+
+export async function sendRoomMessage(slug: string, body: string) {
+  return request<{ message: RoomMessage }>(`/api/rooms/${encodeURIComponent(slug)}`, {
+    method: "POST",
+    json: { body },
+  });
+}
+
+export async function startChatWithUser(username: string) {
+  return startChat(username);
 }
