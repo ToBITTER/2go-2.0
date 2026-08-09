@@ -3,11 +3,21 @@ import { NextRequest, NextResponse } from "next/server";
 const METHODS = ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"] as const;
 
 function getApiBaseUrl() {
-  return process.env.API_BASE_URL ?? process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000";
+  return process.env.API_BASE_URL ?? process.env.NEXT_PUBLIC_API_URL ?? "";
 }
 
 async function proxy(request: NextRequest, pathSegments: string[]) {
-  const targetUrl = new URL(`${getApiBaseUrl()}/api/${pathSegments.join("/")}`);
+  const apiBaseUrl = getApiBaseUrl();
+  if (!apiBaseUrl) {
+    return NextResponse.json(
+      {
+        error: "API base URL is not configured. Set API_BASE_URL or NEXT_PUBLIC_API_URL.",
+      },
+      { status: 503 },
+    );
+  }
+
+  const targetUrl = new URL(`${apiBaseUrl}/api/${pathSegments.join("/")}`);
   targetUrl.search = request.nextUrl.search;
 
   const headers = new Headers(request.headers);
