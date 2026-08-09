@@ -1,131 +1,174 @@
-import { ArrowRight, Flame, MessageCircle, Radio, Search, Shield, Users, Zap } from "lucide-react";
-import { AppShell } from "@/components/app-shell";
+import { ArrowRight, Clock3, Flame, MessageSquareText, Radio, Search, Shield, Star, UserCircle2, Users } from "lucide-react";
+import { AppShell } from "@/components/layout/app-shell";
 import { Roadmap } from "@/components/roadmap";
 import { EmptyState, Pill, StatCard } from "@/components/ui";
+import { homeStats, onlinePeople, roomCards, statusBites, trendingTopics } from "@/data/home";
 import { site } from "@/lib/site";
-
-const onlinePeople = [
-  { name: "David", rank: "Professional", activity: "In Football room", status: "Online" },
-  { name: "Tolu", rank: "Expert", activity: "Listening to music", status: "Online" },
-  { name: "Jay", rank: "Amateur", activity: "Starting a new chat", status: "Online" },
-  { name: "Praise", rank: "Master", activity: "Building in Tech room", status: "Away" },
-];
-
-const trending = [
-  { title: "Champions League predictions", count: "189 people talking" },
-  { title: "Who is still awake?", count: "127 people talking" },
-  { title: "Best Nigerian artist right now?", count: "94 people talking" },
-];
-
-const communities = ["Football", "Music", "Tech", "Relationships", "Faith", "Gaming"];
 
 export default function Page() {
   return (
     <AppShell title="Home" subtitle="Who's around?">
-      <section className="flex flex-col gap-8 pb-24">
-        <div className="glass-card rounded-[2rem] p-6 shadow-soft md:p-8">
-          <div className="flex flex-wrap items-center gap-3 text-sm text-cyan-100/80">
-            <Pill>Live social network</Pill>
-            <Pill tone="soft">Realtime presence</Pill>
-            <Pill tone="soft">XP + ranks</Pill>
-          </div>
-          <div className="mt-8 max-w-2xl">
-            <p className="text-sm uppercase tracking-[0.35em] text-cyan-200/60">Good evening, Praise</p>
-            <h2 className="mt-3 text-4xl font-semibold leading-tight md:text-6xl">
-              The old 2go feeling, rebuilt for modern social discovery.
-            </h2>
-            <p className="mt-5 max-w-xl text-base leading-7 text-slate-300 md:text-lg">
-              {site.description}
-            </p>
+      <section className="flex flex-col gap-6 pb-24">
+        <div className="rounded-[2rem] border border-olive-700/60 bg-panel p-5 shadow-soft md:p-7">
+          <div className="flex items-center justify-between border-b border-olive-700/40 pb-4">
+            <div>
+              <p className="text-[11px] uppercase tracking-[0.35em] text-amber-200/70">2go social</p>
+              <h2 className="mt-2 text-2xl font-semibold">Who is online right now?</h2>
+            </div>
+            <div className="hidden items-center gap-2 rounded-full border border-amber-300/20 bg-amber-300/10 px-3 py-2 text-xs text-amber-100 md:flex">
+              <Clock3 className="h-4 w-4" />
+              Live now
+            </div>
           </div>
 
-          <div className="mt-8 grid gap-4 sm:grid-cols-3">
-            {[
-              { label: "People online", value: "247", icon: Users },
-              { label: "Active rooms", value: "18", icon: Radio },
-              { label: "Trending topics", value: "9", icon: Flame },
-            ].map((item) => <StatCard key={item.label} icon={item.icon} value={item.value} label={item.label} />)}
+          <p className="mt-4 max-w-2xl text-sm leading-6 text-paper-muted md:text-base">
+            {site.description}
+          </p>
+
+          <div className="mt-5 flex flex-wrap gap-2">
+            <Pill>Online people</Pill>
+            <Pill tone="soft">Public rooms</Pill>
+            <Pill tone="soft">Private chats</Pill>
+            <Pill tone="soft">Status updates</Pill>
+          </div>
+
+          <div className="mt-6 grid gap-4 sm:grid-cols-3">
+            {homeStats.map((item) => (
+              <StatCard key={item.label} icon={item.icon} value={item.value} label={item.label} />
+            ))}
           </div>
         </div>
 
-        <div className="grid gap-6 lg:grid-cols-[1.2fr_0.8fr]">
-          <div className="rounded-[2rem] bg-[#f7fafc] p-6 text-slate-900 shadow-soft">
+        <div className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
+          <section className="rounded-[2rem] border border-olive-700/60 bg-panel p-5 shadow-soft">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm uppercase tracking-[0.3em] text-slate-500">People online</p>
-                <h3 className="mt-2 text-2xl font-semibold">See who is active right now</h3>
+                <p className="text-[11px] uppercase tracking-[0.3em] text-amber-200/70">People online</p>
+                <h3 className="mt-2 text-xl font-semibold">The room is alive</h3>
               </div>
-              <button className="inline-flex items-center gap-2 rounded-full bg-slate-900 px-4 py-2 text-sm font-medium text-white">
-                Explore <ArrowRight className="h-4 w-4" />
+              <button className="inline-flex items-center gap-2 rounded-full border border-amber-300/20 bg-amber-300/10 px-4 py-2 text-sm text-amber-100">
+                See all <ArrowRight className="h-4 w-4" />
               </button>
             </div>
-            <div className="mt-6 flex gap-4 overflow-x-auto pb-2">
+
+            <div className="mt-5 space-y-3">
               {onlinePeople.map((person) => (
-                <article key={person.name} className="min-w-[220px] rounded-3xl border border-slate-200 bg-white p-4">
-                  <div className="flex items-start justify-between">
-                    <div className="flex items-center gap-3">
-                      <div className="grid h-12 w-12 place-items-center rounded-2xl bg-slate-900 text-white">
-                        {person.name[0]}
-                      </div>
-                      <div>
-                        <p className="font-semibold">{person.name}</p>
-                        <p className="text-sm text-slate-500">{person.rank}</p>
-                      </div>
+                <article
+                  key={person.name}
+                  className="flex items-center justify-between rounded-2xl border border-olive-700/50 bg-black/20 px-4 py-3"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="grid h-11 w-11 place-items-center rounded-2xl border border-amber-300/20 bg-amber-300/10 text-amber-100">
+                      {person.name[0]}
                     </div>
-                    <span className="mt-1 h-3 w-3 rounded-full bg-emerald-500" />
+                    <div>
+                      <p className="font-semibold">{person.name}</p>
+                      <p className="text-xs text-paper-muted">
+                        {person.activity} · {person.rank}
+                      </p>
+                    </div>
                   </div>
-                  <p className="mt-4 text-sm text-slate-600">{person.activity}</p>
-                  <p className="mt-6 inline-flex rounded-full bg-slate-100 px-3 py-1 text-xs font-medium text-slate-700">
-                    {person.status}
-                  </p>
+                  <div className="text-right">
+                    <p className="text-xs text-emerald-300">{person.status}</p>
+                    <p className="text-[11px] uppercase tracking-[0.2em] text-paper-muted">{person.rank}</p>
+                  </div>
                 </article>
               ))}
             </div>
-            <div className="mt-6">
-              <EmptyState
-                title="It's quiet here."
-                description="This slot is where the app will later surface featured conversations, smart suggestions, or a live room preview when no people cards are available."
-              />
-            </div>
-          </div>
+          </section>
 
-          <div className="glass-card rounded-[2rem] p-6 shadow-soft">
+          <section className="rounded-[2rem] border border-olive-700/60 bg-panel p-5 shadow-soft">
             <div className="flex items-center gap-2">
-              <MessageCircle className="h-5 w-5 text-cyan-300" />
-              <h3 className="font-semibold">Trending now</h3>
+              <Flame className="h-5 w-5 text-amber-200" />
+              <h3 className="text-xl font-semibold">Trending</h3>
             </div>
             <div className="mt-5 space-y-3">
-              {trending.map((item) => (
-                <article key={item.title} className="rounded-2xl border border-white/10 bg-white/5 p-4">
-                  <p className="font-medium">{item.title}</p>
-                  <p className="mt-1 text-sm text-slate-300">{item.count}</p>
+              {trendingTopics.map((topic) => (
+                <article key={topic.title} className="rounded-2xl border border-olive-700/50 bg-black/20 p-4">
+                  <p className="font-medium">{topic.title}</p>
+                  <p className="mt-1 text-sm text-paper-muted">{topic.count}</p>
                 </article>
               ))}
             </div>
-            <div className="mt-6 rounded-2xl border border-white/10 bg-gradient-to-br from-cyan-400/10 to-sky-500/5 p-4">
-              <div className="flex items-center gap-2 text-sm text-cyan-100">
+
+            <div className="mt-5 rounded-2xl border border-amber-300/15 bg-amber-300/10 p-4">
+              <div className="flex items-center gap-2 text-sm text-amber-100">
                 <Shield className="h-4 w-4" />
-                Anti-abuse XP system
+                XP stays server-side only
               </div>
-              <p className="mt-2 text-sm text-slate-300">
-                Reward real conversation, healthy interactions, and community contribution.
+              <p className="mt-2 text-sm text-paper-muted">
+                Reward real conversation, not noise. The old social feel stays, the abuse does not.
               </p>
             </div>
-          </div>
+          </section>
+        </div>
+
+        <div className="grid gap-6 lg:grid-cols-[0.95fr_1.05fr]">
+          <section className="rounded-[2rem] border border-olive-700/60 bg-panel p-5 shadow-soft">
+            <div className="flex items-center gap-2">
+              <MessageSquareText className="h-5 w-5 text-amber-200" />
+              <h3 className="text-xl font-semibold">Fresh statuses</h3>
+            </div>
+            <div className="mt-5 space-y-3">
+              {statusBites.map((status) => (
+                <article key={status.name} className="rounded-2xl border border-olive-700/50 bg-black/20 p-4">
+                  <div className="flex items-center justify-between">
+                    <p className="font-medium">@{status.name}</p>
+                    <span className="text-[11px] uppercase tracking-[0.2em] text-amber-200">{status.tag}</span>
+                  </div>
+                  <p className="mt-2 text-sm text-paper-muted">{status.text}</p>
+                </article>
+              ))}
+            </div>
+          </section>
+
+          <section className="rounded-[2rem] border border-olive-700/60 bg-panel p-5 shadow-soft">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-[11px] uppercase tracking-[0.3em] text-amber-200/70">Rooms</p>
+                <h3 className="mt-2 text-xl font-semibold">Classic chat rooms</h3>
+              </div>
+              <button className="inline-flex items-center gap-2 rounded-full border border-amber-300/20 bg-amber-300/10 px-4 py-2 text-sm text-amber-100">
+                Enter room <ArrowRight className="h-4 w-4" />
+              </button>
+            </div>
+
+            <div className="mt-5 grid gap-3 md:grid-cols-3">
+              {roomCards.map((room) => (
+                <article key={room.name} className="rounded-2xl border border-olive-700/50 bg-black/20 p-4">
+                  <div className="flex items-center justify-between">
+                    <p className="font-semibold">{room.name}</p>
+                    <Star className="h-4 w-4 text-amber-200" />
+                  </div>
+                  <p className="mt-2 text-sm text-paper-muted">{room.members}</p>
+                  <p className="text-sm text-emerald-300">{room.online}</p>
+                </article>
+              ))}
+            </div>
+          </section>
         </div>
 
         <section className="grid gap-4 md:grid-cols-3">
-          {["Private messaging", "Public rooms", "Presence + statuses"].map((item) => (
-            <div key={item} className="glass-card rounded-[1.75rem] p-5">
+          {[
+            { title: "Private messages", icon: UserCircle2 },
+            { title: "Presence + online", icon: Radio },
+            { title: "Search + discovery", icon: Search },
+          ].map((item) => (
+            <div key={item.title} className="rounded-[1.5rem] border border-olive-700/60 bg-panel p-5 shadow-soft">
               <div className="flex items-center gap-3">
-                <Zap className="h-5 w-5 text-amber-300" />
-                <p className="font-medium">{item}</p>
+                <item.icon className="h-5 w-5 text-amber-200" />
+                <p className="font-medium">{item.title}</p>
               </div>
             </div>
           ))}
         </section>
 
         <Roadmap />
+
+        <EmptyState
+          title="It's quiet here."
+          description="This is the kind of empty state 2go used to have, but dressed with a proper modern system behind it."
+        />
       </section>
     </AppShell>
   );
