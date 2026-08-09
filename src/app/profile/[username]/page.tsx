@@ -26,7 +26,7 @@ export default async function PublicProfilePage({ params }: Props) {
           <SectionHeading
             eyebrow="Public profile"
             title={payload.user.displayName}
-            description="A quick look at their vibe."
+            description="See who they are, what they like, and how they move."
           />
           <section className="rounded-[20px] border border-white/10 bg-[#13202b] p-6 shadow-soft">
             <p className="text-sm uppercase tracking-[0.3em] text-[#8fb7d5]">@{payload.user.username}</p>

@@ -9,7 +9,7 @@ export default function ProfilePage() {
         <SectionHeading
           eyebrow="Profile"
           title="Your vibe"
-          description="Edit your name, bio, and picture."
+          description="Update your name, bio, and picture."
         />
         <ProfileEditor />
       </div>
