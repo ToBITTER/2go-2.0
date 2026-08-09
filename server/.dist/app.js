@@ -18,6 +18,7 @@ function createApp() {
         .split(",")
         .map((origin) => origin.trim())
         .filter(Boolean);
+    app.set("trust proxy", 1);
     app.use((0, helmet_1.default)());
     app.use((0, cors_1.default)({
         origin: allowedOrigins,

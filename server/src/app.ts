@@ -14,6 +14,7 @@ export function createApp() {
     .map((origin) => origin.trim())
     .filter(Boolean);
 
+  app.set("trust proxy", 1);
   app.use(helmet());
   app.use(
     cors({

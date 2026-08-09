@@ -1,5 +1,9 @@
 import type { Request, Response } from "express";
 
+function isProduction() {
+  return process.env.NODE_ENV === "production";
+}
+
 export function getCookie(req: Request, name: string) {
   const cookieHeader = req.headers.cookie;
   if (!cookieHeader) return undefined;
@@ -11,8 +15,8 @@ export function getCookie(req: Request, name: string) {
 export function setSessionCookie(res: Response, token: string) {
   res.cookie("2go_session", token, {
     httpOnly: true,
-    sameSite: "lax",
-    secure: false,
+    sameSite: isProduction() ? "none" : "lax",
+    secure: isProduction(),
     path: "/",
   });
 }
@@ -20,5 +24,7 @@ export function setSessionCookie(res: Response, token: string) {
 export function clearSessionCookie(res: Response) {
   res.clearCookie("2go_session", {
     path: "/",
+    sameSite: isProduction() ? "none" : "lax",
+    secure: isProduction(),
   });
 }
