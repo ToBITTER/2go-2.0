@@ -1,1 +1,8 @@
 node_modules
+.next
+server/node_modules
+server/.dist
+*.tsbuildinfo
+package-lock.json
+yarn.lock
+dist
