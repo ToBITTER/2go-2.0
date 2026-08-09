@@ -9,7 +9,7 @@ export default function SignUpPage() {
       <main className="grid min-h-screen place-items-center bg-app px-4 py-8">
         <AuthCard
           title="Create your 2go"
-          subtitle="Choose a username, set your display name, and start your social identity."
+          subtitle="A small, old-school start. We’ll ask one thing at a time."
         >
           <SignUpForm />
           <p className="mt-5 text-sm text-[#b9c6d3]">

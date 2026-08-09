@@ -47,12 +47,12 @@ export function InterestsPicker() {
 
   function onSubmit(formData: FormData) {
     setError(null);
-    const nextBio = String(formData.get("bio") ?? bio);
+    const nextBio = String(formData.get("bio") ?? bio).trim();
 
     startTransition(async () => {
       try {
         await updateOnboarding({ interests: selected, bio: nextBio });
-        router.push("/");
+        router.push("/profile");
       } catch (err) {
         setError(err instanceof Error ? err.message : "Unable to save onboarding");
       }
@@ -61,16 +61,19 @@ export function InterestsPicker() {
 
   return (
     <form action={onSubmit} className="space-y-5">
+      <div className="rounded-[16px] border border-white/10 bg-[#0f161d] p-4">
+        <p className="text-sm text-[#b9c6d3]">Pick a few things you actually care about. You can change this later.</p>
+      </div>
       <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
         {interests.map((interest) => (
           <button
             key={interest}
             type="button"
             onClick={() => toggle(interest)}
-            className={`rounded-[16px] border px-3 py-3 text-sm transition ${
+            className={`rounded-[14px] border px-3 py-3 text-sm transition ${
               selected.includes(interest)
-                ? "border-[#2f7fb8] bg-[#2f7fb8] text-white"
-                : "border-white/10 bg-[#0d1720] text-[#dbe6ee]"
+                ? "border-[#6f8ea8] bg-[#1a2833] text-white"
+                : "border-white/10 bg-[#0f161d] text-[#dbe6ee]"
             }`}
           >
             {interest}
@@ -78,15 +81,18 @@ export function InterestsPicker() {
         ))}
       </div>
       <textarea
-        className="min-h-28 w-full rounded-[16px] border border-white/10 bg-[#0d1720] px-4 py-3 text-sm text-white outline-none placeholder:text-[#7f95a9] focus:border-[#2f7fb8]"
+        className="min-h-28 w-full rounded-[14px] border border-white/10 bg-[#0f161d] px-4 py-3 text-sm text-white outline-none placeholder:text-[#7f95a9] focus:border-[#6f8ea8]"
         name="bio"
-        placeholder="Tell people what you're about..."
+        placeholder="A short bio..."
         value={bio}
         onChange={(event) => setBio(event.target.value)}
       />
       {error ? <p className="text-sm text-red-300">{error}</p> : null}
-      <button disabled={pending} className="w-full rounded-[16px] bg-[#e7f0f7] px-4 py-3 text-sm font-semibold text-[#163042]">
-        {pending ? "Saving..." : "Continue to 2go"}
+      <button
+        disabled={pending}
+        className="w-full rounded-[14px] bg-[#e7f0f7] px-4 py-3 text-sm font-semibold text-[#163042]"
+      >
+        {pending ? "Saving..." : "Continue"}
       </button>
     </form>
   );

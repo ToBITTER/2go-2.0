@@ -136,6 +136,11 @@ export function SignUpForm() {
       return;
     }
 
+    if (currentStep.field === "username" && usernameState === "checking") {
+      setError("Checking availability, give us a second.");
+      return;
+    }
+
     if (step < steps.length) {
       setStep((current) => current + 1);
       return;
@@ -185,6 +190,7 @@ export function SignUpForm() {
         autoComplete={currentStep.field}
         required
       />
+
       {step === 2 ? (
         <p className="text-sm text-[#b9c6d3]">
           {usernameState === "checking"
@@ -193,7 +199,7 @@ export function SignUpForm() {
               ? "Nice, that username is available."
               : usernameState === "taken"
                 ? "That username is already taken."
-                : "We’ll check this as you type."}
+                : "We'll check this as you type."}
         </p>
       ) : null}
 
@@ -209,7 +215,12 @@ export function SignUpForm() {
             Back
           </button>
         ) : null}
-        <button disabled={pending} type="button" onClick={handleNext} className={`${submitClassName()} flex-1`}>
+        <button
+          disabled={pending || (step === 2 && usernameState === "taken")}
+          type="button"
+          onClick={handleNext}
+          className={`${submitClassName()} flex-1`}
+        >
           {pending ? "Creating..." : step < steps.length ? "Continue" : "Create account"}
         </button>
       </div>

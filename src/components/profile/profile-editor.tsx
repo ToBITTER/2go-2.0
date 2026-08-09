@@ -1,8 +1,8 @@
 "use client";
 
 import { useEffect, useState, useTransition } from "react";
-import { getMe, logoutUser, updateProfile } from "@/lib/api";
 import { useRouter } from "next/navigation";
+import { getMe, logoutUser, updateProfile } from "@/lib/api";
 
 export function ProfileEditor() {
   const router = useRouter();
@@ -58,58 +58,60 @@ export function ProfileEditor() {
   }
 
   if (loading) {
-    return (
-      <div className="rounded-[20px] border border-white/10 bg-[#13202b] p-6 text-[#b9c6d3]">
-        Loading profile...
-      </div>
-    );
+    return <div className="rounded-[18px] border border-white/10 bg-[#121a22] p-6 text-[#b9c6d3]">Loading your profile...</div>;
   }
 
   return (
     <div className="grid gap-6 lg:grid-cols-[0.9fr_1.1fr]">
-      <section className="rounded-[20px] border border-white/10 bg-[#13202b] p-6 shadow-soft">
+      <section className="rounded-[18px] border border-white/10 bg-[#121a22] p-5 shadow-soft">
         <div className="flex items-center gap-4">
-          <div className="grid h-16 w-16 place-items-center rounded-[18px] bg-[#e7f0f7] text-2xl font-semibold text-[#163042]">
+          <div className="grid h-16 w-16 place-items-center rounded-[16px] bg-[#e7f0f7] text-2xl font-semibold text-[#163042]">
             {user?.displayName?.[0] ?? "P"}
           </div>
           <div>
-            <p className="text-xl font-semibold text-white">{user?.displayName ?? "Praise"}</p>
+            <p className="text-xl font-semibold text-white">{user?.displayName ?? "Your name"}</p>
             <p className="text-sm text-[#8fb7d5]">@{user?.username ?? "tobitter"}</p>
           </div>
         </div>
 
         <div className="mt-6 space-y-3 text-sm text-[#b9c6d3]">
-          <p><span className="text-white">Rank:</span> {user?.rank ?? "Novice"}</p>
-          <p><span className="text-white">Bio:</span> {user?.bio ?? "New to 2go 2.0"}</p>
-          <p><span className="text-white">Interests:</span> {(user?.interests ?? []).join(" · ") || "None selected"}</p>
+          <p>
+            <span className="text-white">Rank:</span> {user?.rank ?? "Novice"}
+          </p>
+          <p>
+            <span className="text-white">Bio:</span> {user?.bio ?? "A short line about you"}
+          </p>
+          <p>
+            <span className="text-white">Interests:</span> {(user?.interests ?? []).join(" · ") || "None selected"}
+          </p>
         </div>
 
         <button
           type="button"
           onClick={signOut}
-          className="mt-6 rounded-[16px] border border-white/10 bg-[#0d1720] px-4 py-3 text-sm font-semibold text-white"
+          className="mt-6 rounded-[14px] border border-white/10 bg-[#0f161d] px-4 py-3 text-sm font-semibold text-white"
         >
           Sign out
         </button>
       </section>
 
-      <section className="rounded-[20px] border border-white/10 bg-[#13202b] p-6 shadow-soft">
-        <h2 className="text-2xl font-semibold text-white">Edit profile</h2>
+      <section className="rounded-[18px] border border-white/10 bg-[#121a22] p-5 shadow-soft">
+        <h2 className="text-2xl font-semibold text-white">Keep it current</h2>
         <div className="mt-5 space-y-4">
           <input
-            className="w-full rounded-[16px] border border-white/10 bg-[#0d1720] px-4 py-3 text-sm text-white outline-none placeholder:text-[#7f95a9]"
+            className="w-full rounded-[14px] border border-white/10 bg-[#0f161d] px-4 py-3 text-sm text-white outline-none placeholder:text-[#7f95a9]"
             value={form.displayName}
             onChange={(event) => setForm((current) => ({ ...current, displayName: event.target.value }))}
             placeholder="Display name"
           />
           <textarea
-            className="min-h-28 w-full rounded-[16px] border border-white/10 bg-[#0d1720] px-4 py-3 text-sm text-white outline-none placeholder:text-[#7f95a9]"
+            className="min-h-28 w-full rounded-[14px] border border-white/10 bg-[#0f161d] px-4 py-3 text-sm text-white outline-none placeholder:text-[#7f95a9]"
             value={form.bio}
             onChange={(event) => setForm((current) => ({ ...current, bio: event.target.value }))}
-            placeholder="Bio"
+            placeholder="A line about you"
           />
           <input
-            className="w-full rounded-[16px] border border-white/10 bg-[#0d1720] px-4 py-3 text-sm text-white outline-none placeholder:text-[#7f95a9]"
+            className="w-full rounded-[14px] border border-white/10 bg-[#0f161d] px-4 py-3 text-sm text-white outline-none placeholder:text-[#7f95a9]"
             value={form.picture}
             onChange={(event) => setForm((current) => ({ ...current, picture: event.target.value }))}
             placeholder="Profile picture URL"
@@ -119,7 +121,7 @@ export function ProfileEditor() {
             type="button"
             disabled={pending}
             onClick={submit}
-            className="w-full rounded-[16px] bg-[#e7f0f7] px-4 py-3 text-sm font-semibold text-[#163042]"
+            className="w-full rounded-[14px] bg-[#e7f0f7] px-4 py-3 text-sm font-semibold text-[#163042]"
           >
             {pending ? "Saving..." : "Save profile"}
           </button>
