@@ -15,7 +15,7 @@ export default function DiscoverPage() {
         <SectionHeading
           eyebrow="Discovery"
           title="Find your people"
-          description="Phase 0 defines the layout and navigation, so every later feature has a strong home from day one."
+          description="Scroll, tap, and stumble on something good."
         />
 
         <div className="grid gap-4 lg:grid-cols-2">

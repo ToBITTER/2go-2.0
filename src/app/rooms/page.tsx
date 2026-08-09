@@ -9,12 +9,12 @@ const rooms = [
 
 export default function RoomsPage() {
   return (
-    <AppShell title="Rooms" subtitle="Public rooms are the beating heart of 2go 2.0.">
+    <AppShell title="Rooms" subtitle="Public rooms and good noise.">
       <div className="space-y-6">
         <SectionHeading
           eyebrow="Communities"
           title="Rooms that feel alive"
-          description="This route is ready for the public-room experience, presence, and live chat."
+          description="Pick a room and slide in."
         />
         <div className="grid gap-4 md:grid-cols-3">
           {rooms.map((room) => (
