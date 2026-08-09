@@ -2,6 +2,7 @@ import { AppShell } from "@/components/layout/app-shell";
 import { SectionHeading } from "@/components/section-heading";
 import { getProfile } from "@/lib/api";
 import { notFound } from "next/navigation";
+import { headers } from "next/headers";
 
 type Props = {
   params: Promise<{
@@ -11,9 +12,13 @@ type Props = {
 
 export default async function PublicProfilePage({ params }: Props) {
   const { username } = await params;
+  const requestHeaders = await headers();
+  const protocol = requestHeaders.get("x-forwarded-proto") ?? "http";
+  const host = requestHeaders.get("host");
+  const baseUrl = host ? `${protocol}://${host}` : process.env.NEXT_PUBLIC_API_URL;
 
   try {
-    const payload = await getProfile(username);
+    const payload = await getProfile(username, baseUrl);
 
     return (
       <AppShell title={payload.user.displayName} subtitle={`@${payload.user.username}`}>

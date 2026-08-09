@@ -1,15 +1,17 @@
-export const API_BASE_URL =
-  process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000";
-
 type RequestOptions = RequestInit & {
   json?: unknown;
 };
 
-async function request<T>(path: string, options: RequestOptions = {}) {
+function getApiBaseUrl(baseUrl?: string) {
+  if (baseUrl) return baseUrl;
+  return process.env.NEXT_PUBLIC_API_URL ?? "";
+}
+
+async function request<T>(path: string, options: RequestOptions = {}, baseUrl?: string) {
   const headers = new Headers(options.headers);
   headers.set("Content-Type", "application/json");
 
-  const response = await fetch(`${API_BASE_URL}${path}`, {
+  const response = await fetch(`${getApiBaseUrl(baseUrl)}${path}`, {
     ...options,
     credentials: "include",
     headers,
@@ -89,6 +91,6 @@ export async function getInterests() {
   return request<{ interests: string[] }>("/api/interests");
 }
 
-export async function getProfile(username: string) {
-  return request<{ user: AuthUser }>(`/api/profile/${encodeURIComponent(username)}`);
+export async function getProfile(username: string, baseUrl?: string) {
+  return request<{ user: AuthUser }>(`/api/profile/${encodeURIComponent(username)}`, {}, baseUrl);
 }

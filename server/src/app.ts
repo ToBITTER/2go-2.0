@@ -9,11 +9,12 @@ import { profileRouter } from "./routes/profile.js";
 
 export function createApp() {
   const app = express();
+  const allowedOrigin = process.env.CLIENT_ORIGIN ?? "http://localhost:3000";
 
   app.use(helmet());
   app.use(
     cors({
-      origin: ["http://localhost:3000"],
+      origin: [allowedOrigin],
       credentials: true,
     }),
   );
