@@ -18,9 +18,9 @@ export default function AdminPage() {
         />
         <div className="grid gap-4 md:grid-cols-3">
           {metrics.map((metric) => (
-            <div key={metric.label} className="rounded-[1.75rem] border border-white/10 bg-white/5 p-5 shadow-soft">
-              <p className="text-sm text-slate-300">{metric.label}</p>
-              <p className="mt-2 text-3xl font-semibold">{metric.value}</p>
+            <div key={metric.label} className="rounded-[18px] border border-white/10 bg-[#13202b] p-5 shadow-soft">
+              <p className="text-sm text-[#b9c6d3]">{metric.label}</p>
+              <p className="mt-2 text-3xl font-semibold text-white">{metric.value}</p>
             </div>
           ))}
         </div>

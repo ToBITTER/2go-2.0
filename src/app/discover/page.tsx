@@ -19,21 +19,21 @@ export default function DiscoverPage() {
         />
 
         <div className="grid gap-4 lg:grid-cols-2">
-          <section className="rounded-[2rem] border border-white/10 bg-white/5 p-6 shadow-soft">
-            <h2 className="text-xl font-semibold">Communities</h2>
+          <section className="rounded-[20px] border border-white/10 bg-[#13202b] p-6 shadow-soft">
+            <h2 className="text-xl font-semibold text-white">Communities</h2>
             <div className="mt-4 flex flex-wrap gap-2">
               {communities.map((community) => (
-                <span key={community} className="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm">
+                <span key={community} className="rounded-full border border-white/10 bg-[#0d1720] px-3 py-2 text-sm text-[#dbe6ee]">
                   {community}
                 </span>
               ))}
             </div>
           </section>
-          <section className="rounded-[2rem] border border-white/10 bg-white/5 p-6 shadow-soft">
-            <h2 className="text-xl font-semibold">Trending</h2>
+          <section className="rounded-[20px] border border-white/10 bg-[#13202b] p-6 shadow-soft">
+            <h2 className="text-xl font-semibold text-white">Trending</h2>
             <div className="mt-4 space-y-3">
               {trending.map((topic) => (
-                <div key={topic} className="rounded-2xl border border-white/10 bg-slate-950/30 px-4 py-3 text-sm">
+                <div key={topic} className="rounded-[18px] border border-white/10 bg-[#0d1720] px-4 py-3 text-sm text-[#dbe6ee]">
                   {topic}
                 </div>
               ))}

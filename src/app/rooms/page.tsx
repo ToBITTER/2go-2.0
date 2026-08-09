@@ -18,10 +18,10 @@ export default function RoomsPage() {
         />
         <div className="grid gap-4 md:grid-cols-3">
           {rooms.map((room) => (
-            <article key={room.name} className="rounded-[1.75rem] border border-white/10 bg-white/5 p-5 shadow-soft">
-              <p className="text-lg font-semibold">{room.name}</p>
-              <p className="mt-2 text-sm text-slate-300">{room.members} members</p>
-              <p className="text-sm text-cyan-200">{room.online} online</p>
+            <article key={room.name} className="rounded-[18px] border border-white/10 bg-[#13202b] p-5 shadow-soft">
+              <p className="text-lg font-semibold text-white">{room.name}</p>
+              <p className="mt-2 text-sm text-[#b9c6d3]">{room.members} members</p>
+              <p className="text-sm text-[#8fb7d5]">{room.online} online</p>
             </article>
           ))}
         </div>

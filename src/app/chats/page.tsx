@@ -18,13 +18,13 @@ export default function ChatsPage() {
         />
         <div className="space-y-3">
           {chats.map((chat) => (
-            <div key={chat.name} className="rounded-[1.5rem] border border-white/10 bg-white/5 p-4 shadow-soft">
+            <div key={chat.name} className="rounded-[18px] border border-white/10 bg-[#13202b] p-4 shadow-soft">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="font-semibold">{chat.name}</p>
-                  <p className="mt-1 text-sm text-slate-300">{chat.preview}</p>
+                  <p className="font-semibold text-white">{chat.name}</p>
+                  <p className="mt-1 text-sm text-[#b9c6d3]">{chat.preview}</p>
                 </div>
-                <span className="text-xs text-slate-400">{chat.time}</span>
+                <span className="text-xs text-[#8fb7d5]">{chat.time}</span>
               </div>
             </div>
           ))}

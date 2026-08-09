@@ -9,19 +9,19 @@ export default function Page() {
   return (
     <AppShell title="Home" subtitle="Who's around?">
       <section className="flex flex-col gap-6 pb-24">
-        <div className="rounded-[2rem] border border-olive-700/60 bg-panel p-5 shadow-soft md:p-7">
-          <div className="flex items-center justify-between border-b border-olive-700/40 pb-4">
+        <div className="rounded-[20px] border border-white/10 bg-[#13202b] p-5 shadow-soft md:p-6">
+          <div className="flex items-center justify-between border-b border-white/10 pb-4">
             <div>
-              <p className="text-[11px] uppercase tracking-[0.35em] text-amber-200/70">2go social</p>
-              <h2 className="mt-2 text-2xl font-semibold">Who is online right now?</h2>
+              <p className="text-[11px] uppercase tracking-[0.35em] text-[#8fb7d5]">2go social</p>
+              <h2 className="mt-2 text-2xl font-semibold text-white">Who is online right now?</h2>
             </div>
-            <div className="hidden items-center gap-2 rounded-full border border-amber-300/20 bg-amber-300/10 px-3 py-2 text-xs text-amber-100 md:flex">
+            <div className="hidden items-center gap-2 rounded-full border border-white/10 bg-[#0d1720] px-3 py-2 text-xs text-[#c6d4df] md:flex">
               <Clock3 className="h-4 w-4" />
               Live now
             </div>
           </div>
 
-          <p className="mt-4 max-w-2xl text-sm leading-6 text-paper-muted md:text-base">
+          <p className="mt-4 max-w-2xl text-sm leading-6 text-[#b9c6d3] md:text-base">
             {site.description}
           </p>
 
@@ -40,13 +40,13 @@ export default function Page() {
         </div>
 
         <div className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
-          <section className="rounded-[2rem] border border-olive-700/60 bg-panel p-5 shadow-soft">
+          <section className="rounded-[20px] border border-white/10 bg-[#13202b] p-5 shadow-soft">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-[11px] uppercase tracking-[0.3em] text-amber-200/70">People online</p>
-                <h3 className="mt-2 text-xl font-semibold">The room is alive</h3>
+                <p className="text-[11px] uppercase tracking-[0.3em] text-[#8fb7d5]">People online</p>
+                <h3 className="mt-2 text-xl font-semibold text-white">The room is alive</h3>
               </div>
-              <button className="inline-flex items-center gap-2 rounded-full border border-amber-300/20 bg-amber-300/10 px-4 py-2 text-sm text-amber-100">
+              <button className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-[#0d1720] px-4 py-2 text-sm text-[#dbe6ee]">
                 See all <ArrowRight className="h-4 w-4" />
               </button>
             </div>
@@ -55,48 +55,48 @@ export default function Page() {
               {onlinePeople.map((person) => (
                 <article
                   key={person.name}
-                  className="flex items-center justify-between rounded-2xl border border-olive-700/50 bg-black/20 px-4 py-3"
+                  className="flex items-center justify-between rounded-[18px] border border-white/10 bg-[#0d1720] px-4 py-3"
                 >
                   <div className="flex items-center gap-3">
-                    <div className="grid h-11 w-11 place-items-center rounded-2xl border border-amber-300/20 bg-amber-300/10 text-amber-100">
+                    <div className="grid h-11 w-11 place-items-center rounded-[14px] border border-white/10 bg-[#e7f0f7] text-[#163042]">
                       {person.name[0]}
                     </div>
                     <div>
-                      <p className="font-semibold">{person.name}</p>
-                      <p className="text-xs text-paper-muted">
+                      <p className="font-semibold text-white">{person.name}</p>
+                      <p className="text-xs text-[#b9c6d3]">
                         {person.activity} - {person.rank}
                       </p>
                     </div>
                   </div>
                   <div className="text-right">
-                    <p className="text-xs text-emerald-300">{person.status}</p>
-                    <p className="text-[11px] uppercase tracking-[0.2em] text-paper-muted">{person.rank}</p>
+                    <p className="text-xs text-[#7fd18a]">{person.status}</p>
+                    <p className="text-[11px] uppercase tracking-[0.2em] text-[#b9c6d3]">{person.rank}</p>
                   </div>
                 </article>
               ))}
             </div>
           </section>
 
-          <section className="rounded-[2rem] border border-olive-700/60 bg-panel p-5 shadow-soft">
+          <section className="rounded-[20px] border border-white/10 bg-[#13202b] p-5 shadow-soft">
             <div className="flex items-center gap-2">
-              <Flame className="h-5 w-5 text-amber-200" />
-              <h3 className="text-xl font-semibold">Trending</h3>
+              <Flame className="h-5 w-5 text-[#8fb7d5]" />
+              <h3 className="text-xl font-semibold text-white">Trending</h3>
             </div>
             <div className="mt-5 space-y-3">
               {trendingTopics.map((topic) => (
-                <article key={topic.title} className="rounded-2xl border border-olive-700/50 bg-black/20 p-4">
-                  <p className="font-medium">{topic.title}</p>
-                  <p className="mt-1 text-sm text-paper-muted">{topic.count}</p>
+                <article key={topic.title} className="rounded-[18px] border border-white/10 bg-[#0d1720] p-4">
+                  <p className="font-medium text-white">{topic.title}</p>
+                  <p className="mt-1 text-sm text-[#b9c6d3]">{topic.count}</p>
                 </article>
               ))}
             </div>
 
-            <div className="mt-5 rounded-2xl border border-amber-300/15 bg-amber-300/10 p-4">
-              <div className="flex items-center gap-2 text-sm text-amber-100">
+            <div className="mt-5 rounded-[18px] border border-white/10 bg-[#0d1720] p-4">
+              <div className="flex items-center gap-2 text-sm text-[#dbe6ee]">
                 <Shield className="h-4 w-4" />
                 XP stays server-side only
               </div>
-              <p className="mt-2 text-sm text-paper-muted">
+              <p className="mt-2 text-sm text-[#b9c6d3]">
                 Reward real conversation, not noise. The old social feel stays, the abuse does not.
               </p>
             </div>
@@ -104,44 +104,44 @@ export default function Page() {
         </div>
 
         <div className="grid gap-6 lg:grid-cols-[0.95fr_1.05fr]">
-          <section className="rounded-[2rem] border border-olive-700/60 bg-panel p-5 shadow-soft">
+          <section className="rounded-[20px] border border-white/10 bg-[#13202b] p-5 shadow-soft">
             <div className="flex items-center gap-2">
-              <MessageSquareText className="h-5 w-5 text-amber-200" />
-              <h3 className="text-xl font-semibold">Fresh statuses</h3>
+              <MessageSquareText className="h-5 w-5 text-[#8fb7d5]" />
+              <h3 className="text-xl font-semibold text-white">Fresh statuses</h3>
             </div>
             <div className="mt-5 space-y-3">
               {statusBites.map((status) => (
-                <article key={status.name} className="rounded-2xl border border-olive-700/50 bg-black/20 p-4">
+                <article key={status.name} className="rounded-[18px] border border-white/10 bg-[#0d1720] p-4">
                   <div className="flex items-center justify-between">
-                    <p className="font-medium">@{status.name}</p>
-                    <span className="text-[11px] uppercase tracking-[0.2em] text-amber-200">{status.tag}</span>
+                    <p className="font-medium text-white">@{status.name}</p>
+                    <span className="text-[11px] uppercase tracking-[0.2em] text-[#8fb7d5]">{status.tag}</span>
                   </div>
-                  <p className="mt-2 text-sm text-paper-muted">{status.text}</p>
+                  <p className="mt-2 text-sm text-[#b9c6d3]">{status.text}</p>
                 </article>
               ))}
             </div>
           </section>
 
-          <section className="rounded-[2rem] border border-olive-700/60 bg-panel p-5 shadow-soft">
+          <section className="rounded-[20px] border border-white/10 bg-[#13202b] p-5 shadow-soft">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-[11px] uppercase tracking-[0.3em] text-amber-200/70">Rooms</p>
-                <h3 className="mt-2 text-xl font-semibold">Classic chat rooms</h3>
+                <p className="text-[11px] uppercase tracking-[0.3em] text-[#8fb7d5]">Rooms</p>
+                <h3 className="mt-2 text-xl font-semibold text-white">Classic chat rooms</h3>
               </div>
-              <button className="inline-flex items-center gap-2 rounded-full border border-amber-300/20 bg-amber-300/10 px-4 py-2 text-sm text-amber-100">
+              <button className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-[#0d1720] px-4 py-2 text-sm text-[#dbe6ee]">
                 Enter room <ArrowRight className="h-4 w-4" />
               </button>
             </div>
 
             <div className="mt-5 grid gap-3 md:grid-cols-3">
               {roomCards.map((room) => (
-                <article key={room.name} className="rounded-2xl border border-olive-700/50 bg-black/20 p-4">
+                <article key={room.name} className="rounded-[18px] border border-white/10 bg-[#0d1720] p-4">
                   <div className="flex items-center justify-between">
-                    <p className="font-semibold">{room.name}</p>
-                    <Star className="h-4 w-4 text-amber-200" />
+                    <p className="font-semibold text-white">{room.name}</p>
+                    <Star className="h-4 w-4 text-[#8fb7d5]" />
                   </div>
-                  <p className="mt-2 text-sm text-paper-muted">{room.members}</p>
-                  <p className="text-sm text-emerald-300">{room.online}</p>
+                  <p className="mt-2 text-sm text-[#b9c6d3]">{room.members}</p>
+                  <p className="text-sm text-[#7fd18a]">{room.online}</p>
                 </article>
               ))}
             </div>
@@ -154,10 +154,10 @@ export default function Page() {
             { title: "Presence + online", icon: Radio },
             { title: "Search + discovery", icon: Search },
           ].map((item) => (
-            <div key={item.title} className="rounded-[1.5rem] border border-olive-700/60 bg-panel p-5 shadow-soft">
+            <div key={item.title} className="rounded-[18px] border border-white/10 bg-[#13202b] p-5 shadow-soft">
               <div className="flex items-center gap-3">
-                <item.icon className="h-5 w-5 text-amber-200" />
-                <p className="font-medium">{item.title}</p>
+                <item.icon className="h-5 w-5 text-[#8fb7d5]" />
+                <p className="font-medium text-white">{item.title}</p>
               </div>
             </div>
           ))}

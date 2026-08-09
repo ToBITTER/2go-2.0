@@ -4,13 +4,14 @@
 
 :root {
   color-scheme: dark;
-  --bg-ink: #0f1714;
-  --surface: rgba(22, 32, 27, 0.88);
-  --surface-strong: rgba(14, 22, 19, 0.96);
-  --border-subtle: rgba(210, 188, 124, 0.18);
-  --text-main: #f4ebcf;
-  --text-muted: #b7ab86;
-  --panel: #16211c;
+  --bg-ink: #101820;
+  --surface: #16232f;
+  --surface-strong: #1c2b39;
+  --border-subtle: rgba(255, 255, 255, 0.08);
+  --text-main: #f2f6fa;
+  --text-muted: #b1bfd0;
+  --panel: #172635;
+  --accent: #2f7fb8;
 }
 
 html {
@@ -21,7 +22,7 @@ body {
   margin: 0;
   background: var(--bg-ink);
   color: var(--text-main);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: Tahoma, Verdana, Arial, Helvetica, sans-serif;
 }
 
 * {
@@ -31,7 +32,7 @@ body {
 .glass-card {
   background: var(--surface);
   border: 1px solid var(--border-subtle);
-  backdrop-filter: blur(18px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.18);
 }
 
 .surface-strong {
@@ -41,8 +42,7 @@ body {
 
 .bg-app {
   background:
-    radial-gradient(circle at top, rgba(215, 181, 92, 0.08), transparent 34%),
-    linear-gradient(180deg, #0f1714 0%, #111a17 44%, #0e1613 100%);
+    linear-gradient(180deg, rgba(16, 24, 32, 0.98) 0%, rgba(18, 28, 38, 0.98) 100%);
 }
 
 .bg-panel {
@@ -55,12 +55,4 @@ body {
 
 .text-paper-muted {
   color: var(--text-muted);
-}
-
-.border-olive-700\/50 {
-  border-color: rgba(141, 125, 78, 0.5);
-}
-
-.border-olive-700\/60 {
-  border-color: rgba(141, 125, 78, 0.6);
 }
