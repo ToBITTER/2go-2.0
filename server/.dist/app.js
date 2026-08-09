@@ -14,10 +14,13 @@ const interests_js_1 = require("./routes/interests.js");
 const profile_js_1 = require("./routes/profile.js");
 function createApp() {
     const app = (0, express_1.default)();
-    const allowedOrigin = process.env.CLIENT_ORIGIN ?? "http://localhost:3000";
+    const allowedOrigins = (process.env.CLIENT_ORIGIN ?? "http://localhost:3000")
+        .split(",")
+        .map((origin) => origin.trim())
+        .filter(Boolean);
     app.use((0, helmet_1.default)());
     app.use((0, cors_1.default)({
-        origin: [allowedOrigin],
+        origin: allowedOrigins,
         credentials: true,
     }));
     app.use(express_1.default.json());
