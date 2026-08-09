@@ -7,10 +7,7 @@ export default function SignUpPage() {
   return (
     <AuthGate redirectTo="/onboarding">
       <main className="grid min-h-screen place-items-center bg-app px-4 py-8">
-        <AuthCard
-          title="Create your 2go"
-          subtitle="A small, old-school start. We’ll ask one thing at a time."
-        >
+        <AuthCard title="Create your 2go" subtitle="A small, old-school start. We'll ask one thing at a time.">
           <SignUpForm />
           <p className="mt-5 text-sm text-[#b9c6d3]">
             Already have an account?{" "}

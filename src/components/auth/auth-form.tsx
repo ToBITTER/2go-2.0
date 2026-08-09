@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState, useTransition } from "react";
+import { useEffect, useMemo, useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { checkUsernameAvailability, loginUser, registerUser } from "@/lib/api";
 
@@ -10,6 +10,15 @@ function inputClassName() {
 
 function submitClassName() {
   return "w-full rounded-[14px] bg-[#e7f0f7] px-4 py-3 text-sm font-semibold text-[#163042] transition hover:opacity-95";
+}
+
+async function fileToDataUrl(file: File) {
+  return new Promise<string>((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(String(reader.result ?? ""));
+    reader.onerror = () => reject(new Error("Unable to read file"));
+    reader.readAsDataURL(file);
+  });
 }
 
 export function SignInForm() {
@@ -55,7 +64,9 @@ export function SignUpForm() {
     email: "",
     password: "",
   });
+  const [pictureData, setPictureData] = useState<string>("");
   const [usernameState, setUsernameState] = useState<"idle" | "checking" | "available" | "taken">("idle");
+  const pictureInputRef = useRef<HTMLInputElement | null>(null);
 
   const steps = useMemo(
     () => [
@@ -122,6 +133,16 @@ export function SignUpForm() {
     return () => window.clearTimeout(handle);
   }, [form.username, step]);
 
+  async function handlePictureUpload(file?: File) {
+    if (!file) return;
+    try {
+      const dataUrl = await fileToDataUrl(file);
+      setPictureData(dataUrl);
+    } catch {
+      setError("Unable to read the uploaded image.");
+    }
+  }
+
   function handleNext() {
     setError(null);
 
@@ -154,7 +175,12 @@ export function SignUpForm() {
           password: form.password,
           displayName: form.displayName.trim(),
         });
-        router.push("/onboarding");
+
+        if (pictureData) {
+          sessionStorage.setItem("2go_signup_picture", pictureData);
+        }
+
+        router.push("/");
       } catch (err) {
         setError(err instanceof Error ? err.message : "Unable to create account");
       }
@@ -190,6 +216,41 @@ export function SignUpForm() {
         autoComplete={currentStep.field}
         required
       />
+
+      {step === 4 ? (
+        <div className="space-y-3 rounded-[14px] border border-white/10 bg-[#0f161d] p-4">
+          <div className="space-y-1">
+            <p className="text-sm font-medium text-white">Profile picture</p>
+            <p className="text-sm text-[#b9c6d3]">Upload a photo or keep it blank for now.</p>
+          </div>
+          <input
+            ref={pictureInputRef}
+            type="file"
+            accept="image/*"
+            className="block w-full cursor-pointer text-sm text-[#dbe6ee] file:mr-4 file:rounded-full file:border-0 file:bg-[#e7f0f7] file:px-4 file:py-2 file:text-sm file:font-semibold file:text-[#163042]"
+            onChange={(event) => void handlePictureUpload(event.target.files?.[0])}
+          />
+          {pictureData ? (
+            <div className="flex items-center gap-3">
+              <img
+                src={pictureData}
+                alt="Profile preview"
+                className="h-14 w-14 rounded-full object-cover ring-1 ring-white/10"
+              />
+              <button
+                type="button"
+                onClick={() => {
+                  setPictureData("");
+                  if (pictureInputRef.current) pictureInputRef.current.value = "";
+                }}
+                className="text-sm text-[#8fb7d5] underline underline-offset-4"
+              >
+                Remove photo
+              </button>
+            </div>
+          ) : null}
+        </div>
+      ) : null}
 
       {step === 2 ? (
         <p className="text-sm text-[#b9c6d3]">
