@@ -21,8 +21,8 @@ export function AppShell({ title, subtitle, children, actionLabel = "Go live" }:
         <aside className="sticky top-4 hidden h-[calc(100vh-2rem)] w-72 flex-col justify-between overflow-hidden rounded-[22px] border border-white/10 bg-[#13202b] p-4 shadow-soft lg:flex">
           <div>
             <div className="flex items-center gap-3 rounded-[18px] bg-[#0d1720] px-3 py-3">
-              <div className="grid h-11 w-11 place-items-center rounded-[14px] bg-[#e9f0f7] text-[#23445c]">
-                <Star className="h-5 w-5" />
+              <div className="grid h-11 w-11 place-items-center overflow-hidden rounded-[14px] bg-[#e9f0f7]">
+                <img src="/brand/2go-mark.svg" alt="" className="h-full w-full object-contain" />
               </div>
               <div>
                 <p className="text-xs uppercase tracking-[0.3em] text-[#8fb7d5]">2go 2.0</p>

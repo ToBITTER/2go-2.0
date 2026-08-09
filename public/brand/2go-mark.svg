@@ -1,0 +1,26 @@
+<svg width="256" height="256" viewBox="0 0 256 256" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="g" x1="40" y1="36" x2="220" y2="220" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#1E88D6"/>
+      <stop offset="1" stop-color="#0D5C99"/>
+    </linearGradient>
+    <filter id="shadow" x="0" y="0" width="256" height="256" filterUnits="userSpaceOnUse">
+      <feDropShadow dx="0" dy="10" stdDeviation="14" flood-color="#06111c" flood-opacity="0.28"/>
+    </filter>
+  </defs>
+
+  <g filter="url(#shadow)">
+    <path
+      d="M56 30H200C214.359 30 226 41.6406 226 56V154C226 168.359 214.359 180 200 180H112.5L68 223.5C65.112 226.386 60.742 227.248 57.011 225.686C53.28 224.123 50.999 220.489 50.999 216.45V180H56C41.6406 180 30 168.359 30 154V56C30 41.6406 41.6406 30 56 30Z"
+      fill="url(#g)"
+    />
+    <path
+      d="M82 86C82 79.3726 87.3726 74 94 74H162C168.627 74 174 79.3726 174 86C174 92.6274 168.627 98 162 98H132V150C132 156.627 126.627 162 120 162C113.373 162 108 156.627 108 150V98H94C87.3726 98 82 92.6274 82 86Z"
+      fill="#F7FBFF"
+    />
+    <path
+      d="M130 124C130 116.268 136.268 110 144 110H171C177.627 110 183 115.373 183 122C183 128.627 177.627 134 171 134H156V150C156 156.627 150.627 162 144 162C137.373 162 132 156.627 132 150V140C130.64 137.597 130 130.871 130 124Z"
+      fill="#F7FBFF"
+    />
+  </g>
+</svg>
