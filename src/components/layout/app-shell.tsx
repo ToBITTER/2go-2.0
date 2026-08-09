@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { mainNavigation, utilityNavigation } from "@/data/navigation";
 import { ChevronRight, Star } from "lucide-react";
@@ -22,7 +23,7 @@ export function AppShell({ title, subtitle, children, actionLabel = "Go live" }:
           <div>
             <div className="flex items-center gap-3 rounded-[18px] bg-[#0d1720] px-3 py-3">
               <div className="grid h-11 w-11 place-items-center overflow-hidden rounded-[14px] bg-[#e9f0f7]">
-                <img src="/brand/2go-mark.svg" alt="" className="h-full w-full object-contain" />
+                <Image src="/brand/2go-mark.svg" alt="" width={44} height={44} className="h-full w-full object-contain" />
               </div>
               <div>
                 <p className="text-xs uppercase tracking-[0.3em] text-[#8fb7d5]">2go 2.0</p>

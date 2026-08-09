@@ -88,3 +88,7 @@ export async function logoutUser() {
 export async function getInterests() {
   return request<{ interests: string[] }>("/api/interests");
 }
+
+export async function getProfile(username: string) {
+  return request<{ user: AuthUser }>(`/api/profile/${encodeURIComponent(username)}`);
+}
