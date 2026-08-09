@@ -1,0 +1,69 @@
+export type RoadmapPhase = {
+  title: string;
+  summary: string;
+  items: string[];
+};
+
+export const roadmapPhases: RoadmapPhase[] = [
+  {
+    title: "Phase 0: Foundation",
+    summary: "Set the technical and visual base so everything else lands cleanly.",
+    items: [
+      "Repo structure",
+      "Design system",
+      "Environment config",
+      "Shared types",
+      "App shell",
+    ],
+  },
+  {
+    title: "Phase 1: Auth + Profiles",
+    summary: "Let users sign up, sign in, and build their identity.",
+    items: [
+      "Username/email auth",
+      "Onboarding interests",
+      "Profile setup",
+      "Protected routes",
+    ],
+  },
+  {
+    title: "Phase 2: Messaging",
+    summary: "Deliver the core social loop with realtime private chat.",
+    items: [
+      "Direct messages",
+      "Typing indicators",
+      "Read receipts",
+      "Reactions and replies",
+    ],
+  },
+  {
+    title: "Phase 3: Presence + Rooms",
+    summary: "Make the app feel alive with online state and public rooms.",
+    items: [
+      "Online presence",
+      "Statuses",
+      "Communities",
+      "Room chat",
+    ],
+  },
+  {
+    title: "Phase 4: Discovery + Rank",
+    summary: "Power social growth with discovery, XP, and progression.",
+    items: [
+      "Trending topics",
+      "People discovery",
+      "XP transactions",
+      "Rank system",
+    ],
+  },
+  {
+    title: "Phase 5: Safety + Scale",
+    summary: "Lock down moderation, auditing, and production performance.",
+    items: [
+      "Moderation tools",
+      "Admin dashboard",
+      "Search",
+      "Performance and security",
+    ],
+  },
+];
