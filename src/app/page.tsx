@@ -1,6 +1,8 @@
-import { ArrowRight, Flame, MessageCircle, Radio, Search, Shield, Star, Users, Zap } from "lucide-react";
+import { ArrowRight, Flame, MessageCircle, Radio, Search, Shield, Users, Zap } from "lucide-react";
 import { AppShell } from "@/components/app-shell";
 import { Roadmap } from "@/components/roadmap";
+import { EmptyState, Pill, StatCard } from "@/components/ui";
+import { site } from "@/lib/site";
 
 const onlinePeople = [
   { name: "David", rank: "Professional", activity: "In Football room", status: "Online" },
@@ -23,9 +25,9 @@ export default function Page() {
       <section className="flex flex-col gap-8 pb-24">
         <div className="glass-card rounded-[2rem] p-6 shadow-soft md:p-8">
           <div className="flex flex-wrap items-center gap-3 text-sm text-cyan-100/80">
-            <span className="rounded-full border border-cyan-300/20 bg-cyan-300/10 px-3 py-1">Live social network</span>
-            <span className="rounded-full border border-white/10 px-3 py-1">Realtime presence</span>
-            <span className="rounded-full border border-white/10 px-3 py-1">XP + ranks</span>
+            <Pill>Live social network</Pill>
+            <Pill tone="soft">Realtime presence</Pill>
+            <Pill tone="soft">XP + ranks</Pill>
           </div>
           <div className="mt-8 max-w-2xl">
             <p className="text-sm uppercase tracking-[0.35em] text-cyan-200/60">Good evening, Praise</p>
@@ -33,8 +35,7 @@ export default function Page() {
               The old 2go feeling, rebuilt for modern social discovery.
             </h2>
             <p className="mt-5 max-w-xl text-base leading-7 text-slate-300 md:text-lg">
-              See who is online, jump into active rooms, find people with shared interests, and earn
-              real progression for meaningful participation.
+              {site.description}
             </p>
           </div>
 
@@ -43,13 +44,7 @@ export default function Page() {
               { label: "People online", value: "247", icon: Users },
               { label: "Active rooms", value: "18", icon: Radio },
               { label: "Trending topics", value: "9", icon: Flame },
-            ].map((item) => (
-              <div key={item.label} className="rounded-2xl border border-white/10 bg-white/5 p-4">
-                <item.icon className="h-5 w-5 text-cyan-300" />
-                <p className="mt-5 text-3xl font-semibold">{item.value}</p>
-                <p className="mt-1 text-sm text-slate-300">{item.label}</p>
-              </div>
-            ))}
+            ].map((item) => <StatCard key={item.label} icon={item.icon} value={item.value} label={item.label} />)}
           </div>
         </div>
 
@@ -86,6 +81,12 @@ export default function Page() {
                 </article>
               ))}
             </div>
+            <div className="mt-6">
+              <EmptyState
+                title="It's quiet here."
+                description="This slot is where the app will later surface featured conversations, smart suggestions, or a live room preview when no people cards are available."
+              />
+            </div>
           </div>
 
           <div className="glass-card rounded-[2rem] p-6 shadow-soft">
@@ -114,11 +115,7 @@ export default function Page() {
         </div>
 
         <section className="grid gap-4 md:grid-cols-3">
-          {[
-            "Private messaging",
-            "Public rooms",
-            "Presence + statuses",
-          ].map((item) => (
+          {["Private messaging", "Public rooms", "Presence + statuses"].map((item) => (
             <div key={item} className="glass-card rounded-[1.75rem] p-5">
               <div className="flex items-center gap-3">
                 <Zap className="h-5 w-5 text-amber-300" />

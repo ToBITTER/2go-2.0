@@ -19,13 +19,16 @@ export function Roadmap() {
         {roadmapPhases.map((phase, index) => (
           <article key={phase.title} className="rounded-3xl border border-white/10 bg-[#081423] p-5">
             <div className="flex items-start gap-3">
-              {index < 2 ? (
+              {phase.status === "done" ? (
                 <CheckCircle2 className="mt-1 h-5 w-5 text-emerald-300" />
               ) : (
                 <CircleDashed className="mt-1 h-5 w-5 text-cyan-300" />
               )}
               <div>
                 <h3 className="font-semibold">{phase.title}</h3>
+                <p className="mt-2 text-xs uppercase tracking-[0.28em] text-slate-400">
+                  {phase.status === "done" ? "Complete" : phase.status === "in-progress" ? "In progress" : "Upcoming"}
+                </p>
                 <p className="mt-1 text-sm leading-6 text-slate-300">{phase.summary}</p>
               </div>
             </div>

@@ -2,8 +2,19 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "2go 2.0",
+  metadataBase: new URL("https://2go.local"),
+  title: {
+    default: "2go 2.0",
+    template: "%s | 2go 2.0",
+  },
   description: "A modern social network for discovering who's around right now.",
+  applicationName: "2go 2.0",
+  keywords: ["2go", "social network", "chat rooms", "presence", "discovery"],
+  robots: {
+    index: false,
+    follow: false,
+  },
+  themeColor: "#07111d",
 };
 
 export default function RootLayout({

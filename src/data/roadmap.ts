@@ -1,4 +1,5 @@
 export type RoadmapPhase = {
+  status: "done" | "in-progress" | "upcoming";
   title: string;
   summary: string;
   items: string[];
@@ -6,6 +7,7 @@ export type RoadmapPhase = {
 
 export const roadmapPhases: RoadmapPhase[] = [
   {
+    status: "done",
     title: "Phase 0: Foundation",
     summary: "Set the technical and visual base so everything else lands cleanly.",
     items: [
@@ -17,6 +19,7 @@ export const roadmapPhases: RoadmapPhase[] = [
     ],
   },
   {
+    status: "upcoming",
     title: "Phase 1: Auth + Profiles",
     summary: "Let users sign up, sign in, and build their identity.",
     items: [
@@ -27,6 +30,7 @@ export const roadmapPhases: RoadmapPhase[] = [
     ],
   },
   {
+    status: "upcoming",
     title: "Phase 2: Messaging",
     summary: "Deliver the core social loop with realtime private chat.",
     items: [
@@ -37,6 +41,7 @@ export const roadmapPhases: RoadmapPhase[] = [
     ],
   },
   {
+    status: "upcoming",
     title: "Phase 3: Presence + Rooms",
     summary: "Make the app feel alive with online state and public rooms.",
     items: [
@@ -47,6 +52,7 @@ export const roadmapPhases: RoadmapPhase[] = [
     ],
   },
   {
+    status: "upcoming",
     title: "Phase 4: Discovery + Rank",
     summary: "Power social growth with discovery, XP, and progression.",
     items: [
@@ -57,6 +63,7 @@ export const roadmapPhases: RoadmapPhase[] = [
     ],
   },
   {
+    status: "upcoming",
     title: "Phase 5: Safety + Scale",
     summary: "Lock down moderation, auditing, and production performance.",
     items: [

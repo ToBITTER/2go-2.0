@@ -1,0 +1,35 @@
+import express from "express";
+import cors from "cors";
+import helmet from "helmet";
+import morgan from "morgan";
+import { healthRouter } from "./routes/health.js";
+
+export function createApp() {
+  const app = express();
+
+  app.use(helmet());
+  app.use(
+    cors({
+      origin: true,
+      credentials: true,
+    }),
+  );
+  app.use(express.json());
+  app.use(morgan("dev"));
+
+  app.get("/", (_, res) => {
+    res.json({
+      name: "2go 2.0 API",
+      status: "ok",
+      message: "Phase 0 backend foundation is live.",
+    });
+  });
+
+  app.use("/health", healthRouter);
+
+  app.use((_, res) => {
+    res.status(404).json({ error: "Not found" });
+  });
+
+  return app;
+}

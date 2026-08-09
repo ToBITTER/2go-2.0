@@ -1,6 +1,9 @@
+"use client";
+
 import Link from "next/link";
 import { mainNavigation, utilityNavigation } from "@/data/navigation";
 import { ChevronRight, Star } from "lucide-react";
+import { usePathname } from "next/navigation";
 
 type AppShellProps = {
   title: string;
@@ -10,6 +13,8 @@ type AppShellProps = {
 };
 
 export function AppShell({ title, subtitle, children, actionLabel = "Go live" }: AppShellProps) {
+  const pathname = usePathname();
+
   return (
     <main className="min-h-screen bg-radial-fog text-white">
       <div className="mx-auto flex w-full max-w-7xl gap-6 px-4 py-4 md:px-8">
@@ -30,7 +35,12 @@ export function AppShell({ title, subtitle, children, actionLabel = "Go live" }:
                 <Link
                   key={item.href}
                   href={item.href}
-                  className="flex items-center gap-3 rounded-2xl px-4 py-3 text-sm text-slate-200 transition hover:bg-white/10 hover:text-white"
+                  aria-current={pathname === item.href ? "page" : undefined}
+                  className={`flex items-center gap-3 rounded-2xl px-4 py-3 text-sm transition ${
+                    pathname === item.href
+                      ? "bg-white/10 text-white shadow-inner"
+                      : "text-slate-200 hover:bg-white/10 hover:text-white"
+                  }`}
                 >
                   <item.icon className="h-4 w-4" />
                   {item.label}
@@ -82,7 +92,12 @@ export function AppShell({ title, subtitle, children, actionLabel = "Go live" }:
               <Link
                 key={item.href}
                 href={item.href}
-                className="flex flex-col items-center gap-1 rounded-2xl px-2 py-3 text-[11px] text-slate-300 transition hover:bg-white/10 hover:text-white"
+                aria-current={pathname === item.href ? "page" : undefined}
+                className={`flex flex-col items-center gap-1 rounded-2xl px-2 py-3 text-[11px] transition ${
+                  pathname === item.href
+                    ? "bg-white/10 text-white"
+                    : "text-slate-300 hover:bg-white/10 hover:text-white"
+                }`}
               >
                 <item.icon className="h-4 w-4" />
                 {item.label}
