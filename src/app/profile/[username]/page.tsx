@@ -4,13 +4,13 @@ import { getProfile } from "@/lib/api";
 import { notFound } from "next/navigation";
 
 type Props = {
-  params: {
+  params: Promise<{
     username: string;
-  };
+  }>;
 };
 
 export default async function PublicProfilePage({ params }: Props) {
-  const { username } = params;
+  const { username } = await params;
 
   try {
     const payload = await getProfile(username);
