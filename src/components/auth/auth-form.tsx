@@ -34,7 +34,8 @@ export function SignInForm() {
     startTransition(async () => {
       try {
         await loginUser({ email, password });
-        router.push("/");
+        router.replace("/");
+        router.refresh();
       } catch (err) {
         setError(err instanceof Error ? err.message : "Unable to sign in");
       }
@@ -180,7 +181,8 @@ export function SignUpForm() {
           sessionStorage.setItem("2go_signup_picture", pictureData);
         }
 
-        router.push("/");
+        router.replace("/");
+        router.refresh();
       } catch (err) {
         setError(err instanceof Error ? err.message : "Unable to create account");
       }

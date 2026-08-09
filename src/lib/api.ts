@@ -56,6 +56,23 @@ export type AuthSession = {
   user: AuthUser;
 };
 
+export type ChatSummary = {
+  id: string;
+  title: string;
+  subtitle: string;
+  unread: number;
+  lastMessage: string;
+  lastMessageAt: string;
+  members: Array<Pick<AuthUser, "id" | "username" | "displayName" | "rank" | "picture">>;
+};
+
+export type ChatMessage = {
+  id: string;
+  body: string;
+  createdAt: string;
+  sender: Pick<AuthUser, "id" | "username" | "displayName" | "rank" | "picture">;
+};
+
 export async function registerUser(input: {
   username: string;
   email: string;
@@ -112,4 +129,28 @@ export async function getProfile(username: string, baseUrl?: string) {
 export async function checkUsernameAvailability(username: string) {
   const query = new URLSearchParams({ username });
   return request<{ available: boolean }>(`/api/auth/username-available?${query.toString()}`);
+}
+
+export async function getChats() {
+  return request<{ chats: ChatSummary[] }>("/api/chats");
+}
+
+export async function startChat(username: string) {
+  return request<{ conversationId: string }>("/api/chats", {
+    method: "POST",
+    json: { username },
+  });
+}
+
+export async function getConversation(id: string) {
+  return request<{ conversation: { id: string; participants: ChatSummary["members"]; messages: ChatMessage[] } }>(
+    `/api/chats/${encodeURIComponent(id)}`
+  );
+}
+
+export async function sendMessage(id: string, body: string) {
+  return request<{ message: ChatMessage }>(`/api/chats/${encodeURIComponent(id)}`, {
+    method: "POST",
+    json: { body },
+  });
 }

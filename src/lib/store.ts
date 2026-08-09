@@ -13,6 +13,23 @@ export type UserRecord = {
   picture?: string | null;
 };
 
+export type ConversationSummary = {
+  id: string;
+  title: string;
+  subtitle: string;
+  unread: number;
+  lastMessage: string;
+  lastMessageAt: string;
+  members: Array<Pick<UserRecord, "id" | "username" | "displayName" | "rank" | "picture">>;
+};
+
+export type ChatMessage = {
+  id: string;
+  body: string;
+  createdAt: string;
+  sender: Pick<UserRecord, "id" | "username" | "displayName" | "rank" | "picture">;
+};
+
 export const defaultInterests = ["Football", "Music", "Tech", "Gaming", "Movies", "Fashion", "Campus", "Business", "Relationships", "Faith", "Memes", "Anime", "Sports"];
 
 function rankFor(interests: string[]) {
@@ -118,4 +135,105 @@ export async function getUserFromSession(token: string | undefined) {
 
 export async function seedDemoUser() {
   return;
+}
+
+function toConversationSummary(conversation: {
+  id: string;
+  updatedAt: Date;
+  messages: Array<{
+    body: string;
+    createdAt: Date;
+    sender: {
+      id: string;
+      username: string;
+      displayName: string;
+      rank: string;
+      picture: string | null;
+    };
+  }>;
+  participants: Array<{
+    user: {
+      id: string;
+      username: string;
+      displayName: string;
+      rank: string;
+      picture: string | null;
+    };
+  }>;
+}): ConversationSummary {
+  const members = conversation.participants.map(({ user }) => ({
+    id: user.id,
+    username: user.username,
+    displayName: user.displayName,
+    rank: user.rank,
+    picture: user.picture,
+  }));
+  const other = members[0];
+  const lastMessage = conversation.messages[0];
+  return {
+    id: conversation.id,
+    title: other ? other.displayName : "Conversation",
+    subtitle: other ? `@${other.username}` : "Private chat",
+    unread: 0,
+    lastMessage: lastMessage?.body ?? "Say hello",
+    lastMessageAt: conversation.updatedAt.toISOString(),
+    members,
+  };
+}
+
+export async function listConversations(userId: string) {
+  const conversations = await prisma.conversation.findMany({
+    where: { participants: { some: { userId } } },
+    include: {
+      participants: { include: { user: true } },
+      messages: { orderBy: { createdAt: "desc" }, take: 1, include: { sender: true } },
+    },
+    orderBy: { updatedAt: "desc" },
+  });
+
+  return conversations.map((conversation) => toConversationSummary(conversation));
+}
+
+export async function getConversationById(conversationId: string, userId: string) {
+  const conversation = await prisma.conversation.findFirst({
+    where: { id: conversationId, participants: { some: { userId } } },
+    include: {
+      participants: { include: { user: true } },
+      messages: { orderBy: { createdAt: "asc" }, include: { sender: true } },
+    },
+  });
+  if (!conversation) return null;
+  return conversation;
+}
+
+export async function getOrCreateDirectConversation(userId: string, otherUserId: string) {
+  const existing = await prisma.conversation.findFirst({
+    where: {
+      participants: {
+        every: {
+          OR: [{ userId }, { userId: otherUserId }],
+        },
+      },
+    },
+    include: { participants: true },
+  });
+
+  if (existing) return existing;
+
+  return prisma.conversation.create({
+    data: {
+      participants: {
+        create: [{ userId }, { userId: otherUserId }],
+      },
+    },
+  });
+}
+
+export async function createMessage(conversationId: string, senderId: string, body: string) {
+  const message = await prisma.message.create({
+    data: { conversationId, senderId, body },
+    include: { sender: true },
+  });
+  await prisma.conversation.update({ where: { id: conversationId }, data: { updatedAt: new Date() } });
+  return message;
 }

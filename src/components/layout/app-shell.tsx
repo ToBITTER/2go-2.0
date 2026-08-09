@@ -25,6 +25,7 @@ export function AppShell({
 }: AppShellProps) {
   const pathname = usePathname();
   const [user, setUser] = useState<AuthUser | null>(null);
+  const [authReady, setAuthReady] = useState(false);
   const utilityItems: NavigationItem[] = utilityNavigation;
 
   useEffect(() => {
@@ -34,6 +35,8 @@ export function AppShell({
         setUser(payload.user);
       } catch {
         setUser(null);
+      } finally {
+        setAuthReady(true);
       }
     })();
   }, []);
@@ -91,7 +94,7 @@ export function AppShell({
           </div>
 
           <div className="space-y-2">
-            {user ? (
+            {authReady && user ? (
               <div className="rounded-[16px] border border-white/10 bg-[#0d1720] p-4">
                 <div className="flex items-center gap-3">
                   <div className="grid h-10 w-10 place-items-center rounded-[12px] bg-[#e7f0f7] text-[#163042]">
@@ -121,7 +124,7 @@ export function AppShell({
                 <ChevronRight className="h-4 w-4" />
               </Link>
             ))}
-            {user ? (
+            {authReady && user ? (
               <button
                 type="button"
                 onClick={handleLogout}
@@ -148,7 +151,7 @@ export function AppShell({
               <p className="text-[11px] uppercase tracking-[0.3em] text-[#8fb7d5]">2go 2.0</p>
               <p className="font-semibold text-white">{title}</p>
             </div>
-            {user ? (
+            {authReady && user ? (
               <button
                 type="button"
                 onClick={handleLogout}
@@ -156,10 +159,14 @@ export function AppShell({
               >
                 Sign out
               </button>
-            ) : (
+            ) : authReady ? (
               <Link href={actionHref} className="rounded-full bg-[#e7f0f7] px-4 py-2 text-sm font-semibold text-[#163042]">
                 {actionLabel}
               </Link>
+            ) : (
+              <span className="rounded-full bg-[#e7f0f7] px-4 py-2 text-sm font-semibold text-[#163042] opacity-70">
+                Loading...
+              </span>
             )}
           </div>
           {children}
