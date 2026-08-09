@@ -2,9 +2,11 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { useEffect, useState } from "react";
 import { mainNavigation, utilityNavigation } from "@/data/navigation";
-import { ChevronRight, Star } from "lucide-react";
+import { ChevronRight, LogOut, Star, UserCircle2 } from "lucide-react";
 import { usePathname } from "next/navigation";
+import { getMe, logoutUser, type AuthUser } from "@/lib/api";
 
 type AppShellProps = {
   title: string;
@@ -15,6 +17,29 @@ type AppShellProps = {
 
 export function AppShell({ title, subtitle, children, actionLabel = "Go live" }: AppShellProps) {
   const pathname = usePathname();
+  const [user, setUser] = useState<AuthUser | null>(null);
+
+  useEffect(() => {
+    void (async () => {
+      try {
+        const payload = await getMe();
+        setUser(payload.user);
+      } catch {
+        setUser(null);
+      }
+    })();
+  }, []);
+
+  function handleLogout() {
+    void (async () => {
+      try {
+        await logoutUser();
+        setUser(null);
+      } catch {
+        setUser(null);
+      }
+    })();
+  }
 
   return (
     <main className="min-h-screen bg-app text-paper">
@@ -58,6 +83,23 @@ export function AppShell({ title, subtitle, children, actionLabel = "Go live" }:
           </div>
 
           <div className="space-y-2">
+            {user ? (
+              <div className="rounded-[16px] border border-white/10 bg-[#0d1720] p-4">
+                <div className="flex items-center gap-3">
+                  <div className="grid h-10 w-10 place-items-center rounded-[12px] bg-[#e7f0f7] text-[#163042]">
+                    {user.displayName?.[0] ?? "U"}
+                  </div>
+                  <div>
+                    <p className="text-sm font-semibold text-white">{user.displayName}</p>
+                    <p className="text-xs text-[#8fb7d5]">@{user.username}</p>
+                  </div>
+                </div>
+                <div className="mt-3 flex items-center justify-between text-xs text-[#b9c6d3]">
+                  <span>{user.rank}</span>
+                  <span>{user.interests.length} interests</span>
+                </div>
+              </div>
+            ) : null}
             {utilityNavigation.map((item) => (
               <Link
                 key={item.href}
@@ -71,9 +113,24 @@ export function AppShell({ title, subtitle, children, actionLabel = "Go live" }:
                 <ChevronRight className="h-4 w-4" />
               </Link>
             ))}
-            <button className="w-full rounded-[16px] bg-[#e7f0f7] px-4 py-3 text-sm font-semibold text-[#163042]">
-              {actionLabel}
-            </button>
+            {user ? (
+              <button
+                type="button"
+                onClick={handleLogout}
+                className="flex w-full items-center justify-center gap-2 rounded-[16px] border border-white/10 bg-[#0d1720] px-4 py-3 text-sm font-semibold text-white"
+              >
+                <LogOut className="h-4 w-4" />
+                Sign out
+              </button>
+            ) : (
+              <Link
+                href="/auth/sign-in"
+                className="flex w-full items-center justify-center gap-2 rounded-[16px] bg-[#e7f0f7] px-4 py-3 text-sm font-semibold text-[#163042]"
+              >
+                <UserCircle2 className="h-4 w-4" />
+                {actionLabel}
+              </Link>
+            )}
           </div>
         </aside>
 
@@ -83,9 +140,19 @@ export function AppShell({ title, subtitle, children, actionLabel = "Go live" }:
               <p className="text-[11px] uppercase tracking-[0.3em] text-[#8fb7d5]">2go 2.0</p>
               <p className="font-semibold text-white">{title}</p>
             </div>
-            <button className="rounded-full bg-[#e7f0f7] px-4 py-2 text-sm font-semibold text-[#163042]">
-              {actionLabel}
-            </button>
+            {user ? (
+              <button
+                type="button"
+                onClick={handleLogout}
+                className="rounded-full bg-[#e7f0f7] px-4 py-2 text-sm font-semibold text-[#163042]"
+              >
+                Sign out
+              </button>
+            ) : (
+              <Link href="/auth/sign-in" className="rounded-full bg-[#e7f0f7] px-4 py-2 text-sm font-semibold text-[#163042]">
+                {actionLabel}
+              </Link>
+            )}
           </div>
           {children}
           <nav className="sticky bottom-4 mt-6 grid grid-cols-5 gap-2 rounded-[18px] border border-white/10 bg-[#13202b]/95 p-2 shadow-soft lg:hidden">
