@@ -12,20 +12,33 @@ async function request<T>(path: string, options: RequestOptions = {}, baseUrl?: 
   const headers = new Headers(options.headers);
   headers.set("Content-Type", "application/json");
 
-  const response = await fetch(`${getApiBaseUrl(baseUrl)}${path}`, {
-    ...options,
-    credentials: "include",
-    headers,
-    body: options.json ? JSON.stringify(options.json) : options.body,
-  });
-
-  const payload = await response.json().catch(() => null);
-
-  if (!response.ok) {
-    throw new Error(payload?.error ?? "Request failed");
+  let response: Response;
+  try {
+    response = await fetch(`${getApiBaseUrl(baseUrl)}${path}`, {
+      ...options,
+      credentials: "include",
+      headers,
+      body: options.json ? JSON.stringify(options.json) : options.body,
+    });
+  } catch {
+    throw new Error("Network request failed. Check the API URL and your connection.");
   }
 
-  return payload as T;
+  const rawText = await response.text();
+  const payload = rawText ? (() => {
+    try {
+      return JSON.parse(rawText) as { error?: string; message?: string };
+    } catch {
+      return null;
+    }
+  })() : null;
+
+  if (!response.ok) {
+    const details = payload?.error ?? payload?.message ?? rawText;
+    throw new Error(details ? `${response.status} ${details}` : `${response.status} Request failed`);
+  }
+
+  return (payload ?? (rawText ? JSON.parse(rawText) : null)) as T;
 }
 
 export type AuthUser = {
