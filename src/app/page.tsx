@@ -15,8 +15,7 @@ export default function Page() {
             Remember when chat felt alive?
           </h1>
           <p className="mt-4 max-w-2xl text-base leading-7 text-[#b9c6d3] md:text-lg">
-            2go brings back that simple, familiar feeling. No noise, no pressure, just a clean place to sign in or
-            create an account and see what&apos;s happening.
+            2go brings back that simple, familiar feeling. Quick sign up, quick log in, and straight into the vibe.
           </p>
 
           <div className="mt-8 flex flex-wrap gap-3">
@@ -37,9 +36,9 @@ export default function Page() {
 
         <div className="mx-auto grid w-full max-w-4xl gap-4 md:grid-cols-3">
           {[
-            { icon: Users, title: "People online", text: "A familiar room feel, brought back with a cleaner system." },
-            { icon: MessageSquareText, title: "Statuses", text: "Short updates, like the old days." },
-            { icon: ArrowRight, title: "Quick entry", text: "Choose sign up or log in and get moving." },
+            { icon: Users, title: "People online", text: "See who&apos;s around right now." },
+            { icon: MessageSquareText, title: "Statuses", text: "Drop a quick thought and move." },
+            { icon: ArrowRight, title: "Quick entry", text: "Sign up or log in and roll in." },
           ].map((item) => (
             <article key={item.title} className="rounded-[18px] border border-white/10 bg-[#0d1720] p-5">
               <item.icon className="h-5 w-5 text-[#8fb7d5]" />
