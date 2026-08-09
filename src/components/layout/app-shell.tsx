@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { mainNavigation, utilityNavigation } from "@/data/navigation";
+import { mainNavigation, utilityNavigation, type NavigationItem } from "@/data/navigation";
 import { ChevronRight, LogOut, Star, UserCircle2 } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { getMe, logoutUser, type AuthUser } from "@/lib/api";
@@ -25,6 +25,7 @@ export function AppShell({
 }: AppShellProps) {
   const pathname = usePathname();
   const [user, setUser] = useState<AuthUser | null>(null);
+  const utilityItems: NavigationItem[] = utilityNavigation;
 
   useEffect(() => {
     void (async () => {
@@ -107,7 +108,7 @@ export function AppShell({
                 </div>
               </div>
             ) : null}
-            {utilityNavigation.map((item) => (
+            {utilityItems.map((item) => (
               <Link
                 key={item.href}
                 href={item.href}

@@ -4,7 +4,8 @@ type RequestOptions = RequestInit & {
 
 function getApiBaseUrl(baseUrl?: string) {
   if (baseUrl) return baseUrl;
-  return process.env.NEXT_PUBLIC_API_URL ?? "";
+  if (typeof window !== "undefined") return "";
+  return process.env.API_BASE_URL ?? process.env.NEXT_PUBLIC_API_URL ?? "";
 }
 
 async function request<T>(path: string, options: RequestOptions = {}, baseUrl?: string) {

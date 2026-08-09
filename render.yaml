@@ -9,6 +9,11 @@ services:
     envVars:
       - key: NODE_ENV
         value: production
+      - key: API_BASE_URL
+        fromService:
+          type: web
+          name: 2go-2-0-api
+          envVarKey: RENDER_EXTERNAL_URL
       - key: NEXT_PUBLIC_API_URL
         fromService:
           type: web
