@@ -13,9 +13,16 @@ type AppShellProps = {
   subtitle: string;
   children: React.ReactNode;
   actionLabel?: string;
+  actionHref?: string;
 };
 
-export function AppShell({ title, subtitle, children, actionLabel = "Go live" }: AppShellProps) {
+export function AppShell({
+  title,
+  subtitle,
+  children,
+  actionLabel = "Go live",
+  actionHref = "/auth/sign-in",
+}: AppShellProps) {
   const pathname = usePathname();
   const [user, setUser] = useState<AuthUser | null>(null);
 
@@ -124,7 +131,7 @@ export function AppShell({ title, subtitle, children, actionLabel = "Go live" }:
               </button>
             ) : (
               <Link
-                href="/auth/sign-in"
+                href={actionHref}
                 className="flex w-full items-center justify-center gap-2 rounded-[16px] bg-[#e7f0f7] px-4 py-3 text-sm font-semibold text-[#163042]"
               >
                 <UserCircle2 className="h-4 w-4" />
@@ -149,7 +156,7 @@ export function AppShell({ title, subtitle, children, actionLabel = "Go live" }:
                 Sign out
               </button>
             ) : (
-              <Link href="/auth/sign-in" className="rounded-full bg-[#e7f0f7] px-4 py-2 text-sm font-semibold text-[#163042]">
+              <Link href={actionHref} className="rounded-full bg-[#e7f0f7] px-4 py-2 text-sm font-semibold text-[#163042]">
                 {actionLabel}
               </Link>
             )}

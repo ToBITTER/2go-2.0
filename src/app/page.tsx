@@ -4,11 +4,47 @@ import { Roadmap } from "@/components/roadmap";
 import { EmptyState, Pill, StatCard } from "@/components/ui";
 import { homeStats, onlinePeople, roomCards, statusBites, trendingTopics } from "@/data/home";
 import { site } from "@/lib/site";
+import Link from "next/link";
 
 export default function Page() {
   return (
-    <AppShell title="Home" subtitle="Who's around?">
+    <AppShell title="Home" subtitle="Who's around?" actionLabel="Sign up" actionHref="/auth/sign-up">
       <section className="flex flex-col gap-6 pb-24">
+        <div className="rounded-[20px] border border-white/10 bg-[#13202b] p-5 shadow-soft md:p-6">
+          <div className="grid gap-5 lg:grid-cols-[1.15fr_0.85fr] lg:items-center">
+            <div>
+              <p className="text-[11px] uppercase tracking-[0.35em] text-[#8fb7d5]">Welcome to 2go</p>
+              <h1 className="mt-2 max-w-xl text-4xl font-semibold leading-tight text-white md:text-5xl">
+                A modern social room with the old-school energy people actually miss.
+              </h1>
+              <p className="mt-4 max-w-2xl text-sm leading-6 text-[#b9c6d3] md:text-base">
+                Create your account, pick your interests, and jump into live rooms, private chats, and status updates.
+              </p>
+              <div className="mt-6 flex flex-wrap gap-3">
+                <Link
+                  href="/auth/sign-up"
+                  className="inline-flex items-center justify-center rounded-full bg-[#e7f0f7] px-5 py-3 text-sm font-semibold text-[#163042]"
+                >
+                  Create account
+                </Link>
+                <Link
+                  href="/auth/sign-in"
+                  className="inline-flex items-center justify-center rounded-full border border-white/10 bg-[#0d1720] px-5 py-3 text-sm font-semibold text-[#dbe6ee]"
+                >
+                  Sign in
+                </Link>
+              </div>
+            </div>
+            <div className="rounded-[18px] border border-white/10 bg-[#0d1720] p-4">
+              <p className="text-xs uppercase tracking-[0.3em] text-[#8fb7d5]">Phase 1</p>
+              <p className="mt-2 text-xl font-semibold text-white">Signup and onboarding</p>
+              <p className="mt-3 text-sm leading-6 text-[#b9c6d3]">
+                This is the entry point for new users. The CTA now goes straight to the sign-up form.
+              </p>
+            </div>
+          </div>
+        </div>
+
         <div className="rounded-[20px] border border-white/10 bg-[#13202b] p-5 shadow-soft md:p-6">
           <div className="flex items-center justify-between border-b border-white/10 pb-4">
             <div>
