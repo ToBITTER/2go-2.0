@@ -1,4 +1,4 @@
-import { Compass, Home, MessageSquareText, Shield, Sparkles, UserRound } from "lucide-react";
+import { Compass, Home, MessageSquareText, Sparkles, UserRound } from "lucide-react";
 
 export const mainNavigation = [
   { href: "/", label: "Home", icon: Home },
@@ -8,6 +8,4 @@ export const mainNavigation = [
   { href: "/profile", label: "Profile", icon: UserRound },
 ];
 
-export const utilityNavigation = [
-  { href: "/admin", label: "Admin", icon: Shield },
-];
+export const utilityNavigation = [];
