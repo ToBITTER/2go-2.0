@@ -3,6 +3,9 @@ import cors from "cors";
 import helmet from "helmet";
 import morgan from "morgan";
 import { healthRouter } from "./routes/health.js";
+import { authRouter } from "./routes/auth.js";
+import { interestsRouter } from "./routes/interests.js";
+import { profileRouter } from "./routes/profile.js";
 
 export function createApp() {
   const app = express();
@@ -10,7 +13,7 @@ export function createApp() {
   app.use(helmet());
   app.use(
     cors({
-      origin: true,
+      origin: ["http://localhost:3000"],
       credentials: true,
     }),
   );
@@ -25,7 +28,10 @@ export function createApp() {
     });
   });
 
-  app.use("/health", healthRouter);
+  app.use("/api/health", healthRouter);
+  app.use("/api/auth", authRouter);
+  app.use("/api/interests", interestsRouter);
+  app.use("/api/profile", profileRouter);
 
   app.use((_, res) => {
     res.status(404).json({ error: "Not found" });

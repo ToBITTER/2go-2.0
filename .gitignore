@@ -2,6 +2,7 @@ node_modules
 .next
 server/node_modules
 server/.dist
+server/.env
 *.tsbuildinfo
 package-lock.json
 yarn.lock

@@ -2,7 +2,7 @@ import { Router } from "express";
 
 export const healthRouter = Router();
 
-healthRouter.get("/", (_, res) => {
+healthRouter.get("/", (_req, res) => {
   res.json({
     ok: true,
     timestamp: new Date().toISOString(),
