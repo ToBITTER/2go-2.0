@@ -9,7 +9,7 @@ export default function SignInPage() {
       <main className="grid min-h-screen place-items-center bg-app px-4 py-8">
         <AuthCard
           title="Welcome back"
-          subtitle="Pick up where you left off."
+          subtitle="Jump back in and see who's around."
         >
           <SignInForm />
           <p className="mt-5 text-sm text-[#b9c6d3]">

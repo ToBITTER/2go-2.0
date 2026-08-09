@@ -34,7 +34,7 @@ export function SignInForm() {
     startTransition(async () => {
       try {
         await loginUser({ email, password });
-        router.push("/onboarding");
+        router.push("/");
       } catch (err) {
         setError(err instanceof Error ? err.message : "Unable to sign in");
       }

@@ -8,9 +8,6 @@ export default function Page() {
       <section className="flex min-h-[calc(100vh-2rem)] flex-col justify-center gap-8 pb-16 pt-8">
         <div className="mx-auto w-full max-w-4xl rounded-[24px] border border-white/10 bg-[#13202b] p-6 shadow-soft md:p-10">
           <p className="text-[11px] uppercase tracking-[0.45em] text-[#8fb7d5]">2go 2.0</p>
-          <div className="mt-4 inline-flex items-center rounded-full border border-white/10 bg-[#0d1720] px-4 py-2 text-[11px] uppercase tracking-[0.35em] text-[#dbe6ee]">
-            Master ultimate novice
-          </div>
           <h1 className="mt-4 max-w-2xl text-4xl font-semibold leading-tight text-white md:text-6xl">
             Remember when chat felt alive?
           </h1>

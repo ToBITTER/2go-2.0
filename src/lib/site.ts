@@ -1,5 +1,5 @@
 export const site = {
   name: "2go 2.0",
   tagline: "Who's around?",
-  description: "A modern social network for discovering who is online, active, and worth talking to right now.",
+  description: "A social space for seeing who's around, jumping into rooms, and talking in real time.",
 } as const;

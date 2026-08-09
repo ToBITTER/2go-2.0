@@ -9,12 +9,12 @@ const metrics = [
 
 export default function AdminPage() {
   return (
-    <AppShell title="Admin" subtitle="Moderation and system health sit apart from the main social experience.">
+    <AppShell title="Admin" subtitle="System tools live apart from the main social experience.">
       <div className="space-y-6">
         <SectionHeading
           eyebrow="Operations"
-          title="Admin foundation"
-          description="Phase 0 includes a separate admin route so ops can stay isolated from the main product."
+          title="Operations"
+          description="Basic system visibility for maintenance and moderation."
         />
         <div className="grid gap-4 md:grid-cols-3">
           {metrics.map((metric) => (

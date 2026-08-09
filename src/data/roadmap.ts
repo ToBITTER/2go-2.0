@@ -8,7 +8,7 @@ export type RoadmapPhase = {
 export const roadmapPhases: RoadmapPhase[] = [
   {
     status: "done",
-    title: "Phase 0: Foundation",
+    title: "Foundation",
     summary: "Set the technical and visual base so everything else lands cleanly.",
     items: [
       "Repo structure",
@@ -20,7 +20,7 @@ export const roadmapPhases: RoadmapPhase[] = [
   },
   {
     status: "upcoming",
-    title: "Phase 1: Auth + Profiles",
+    title: "Auth + Profiles",
     summary: "Let users sign up, sign in, and build their identity.",
     items: [
       "Username/email auth",
@@ -31,7 +31,7 @@ export const roadmapPhases: RoadmapPhase[] = [
   },
   {
     status: "upcoming",
-    title: "Phase 2: Messaging",
+    title: "Messaging",
     summary: "Deliver the core social loop with realtime private chat.",
     items: [
       "Direct messages",
@@ -42,7 +42,7 @@ export const roadmapPhases: RoadmapPhase[] = [
   },
   {
     status: "upcoming",
-    title: "Phase 3: Presence + Rooms",
+    title: "Presence + Rooms",
     summary: "Make the app feel alive with online state and public rooms.",
     items: [
       "Online presence",
@@ -53,7 +53,7 @@ export const roadmapPhases: RoadmapPhase[] = [
   },
   {
     status: "upcoming",
-    title: "Phase 4: Discovery + Rank",
+    title: "Discovery + Rank",
     summary: "Power social growth with discovery, XP, and progression.",
     items: [
       "Trending topics",
@@ -64,11 +64,11 @@ export const roadmapPhases: RoadmapPhase[] = [
   },
   {
     status: "upcoming",
-    title: "Phase 5: Safety + Scale",
+    title: "Safety + Scale",
     summary: "Lock down moderation, auditing, and production performance.",
     items: [
       "Moderation tools",
-      "Admin dashboard",
+      "Admin tools",
       "Search",
       "Performance and security",
     ],

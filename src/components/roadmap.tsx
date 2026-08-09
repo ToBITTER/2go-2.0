@@ -6,12 +6,12 @@ export function Roadmap() {
     <section className="rounded-[20px] border border-white/10 bg-[#13202b] p-6 shadow-soft md:p-8">
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
-          <p className="text-xs uppercase tracking-[0.35em] text-[#8fb7d5]">Vibe map</p>
-          <h2 className="mt-2 text-2xl font-semibold text-white">What 2go feels like</h2>
+          <p className="text-xs uppercase tracking-[0.35em] text-[#8fb7d5]">What&apos;s inside</p>
+          <h2 className="mt-2 text-2xl font-semibold text-white">Built for people, rooms, and real-time chat</h2>
         </div>
         <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-[#0d1720] px-3 py-1 text-sm text-[#dbe6ee]">
           <Sparkles className="h-4 w-4" />
-          Straight to the good part
+          No filler
         </div>
       </div>
 
