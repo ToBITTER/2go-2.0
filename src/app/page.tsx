@@ -64,7 +64,7 @@ export default function Page() {
                     <div>
                       <p className="font-semibold">{person.name}</p>
                       <p className="text-xs text-paper-muted">
-                        {person.activity} · {person.rank}
+                        {person.activity} - {person.rank}
                       </p>
                     </div>
                   </div>
