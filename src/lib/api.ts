@@ -94,3 +94,8 @@ export async function getInterests() {
 export async function getProfile(username: string, baseUrl?: string) {
   return request<{ user: AuthUser }>(`/api/profile/${encodeURIComponent(username)}`, {}, baseUrl);
 }
+
+export async function checkUsernameAvailability(username: string) {
+  const query = new URLSearchParams({ username });
+  return request<{ available: boolean }>(`/api/auth/username-available?${query.toString()}`);
+}

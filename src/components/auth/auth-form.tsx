@@ -1,15 +1,15 @@
 "use client";
 
-import { useMemo, useState, useTransition } from "react";
+import { useEffect, useMemo, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { loginUser, registerUser } from "@/lib/api";
+import { checkUsernameAvailability, loginUser, registerUser } from "@/lib/api";
 
 function inputClassName() {
-  return "w-full rounded-[16px] border border-white/10 bg-[#0d1720] px-4 py-3 text-sm text-white outline-none placeholder:text-[#7f95a9] focus:border-[#2f7fb8]";
+  return "w-full rounded-[14px] border border-white/10 bg-[#101820] px-4 py-3 text-sm text-white outline-none placeholder:text-[#7f95a9] focus:border-[#6f8ea8]";
 }
 
 function submitClassName() {
-  return "w-full rounded-[16px] bg-[#e7f0f7] px-4 py-3 text-sm font-semibold text-[#163042] transition hover:opacity-95";
+  return "w-full rounded-[14px] bg-[#e7f0f7] px-4 py-3 text-sm font-semibold text-[#163042] transition hover:opacity-95";
 }
 
 export function SignInForm() {
@@ -55,6 +55,7 @@ export function SignUpForm() {
     email: "",
     password: "",
   });
+  const [usernameState, setUsernameState] = useState<"idle" | "checking" | "available" | "taken">("idle");
 
   const steps = useMemo(
     () => [
@@ -93,7 +94,33 @@ export function SignUpForm() {
 
   function updateField(name: keyof typeof form, value: string) {
     setForm((current) => ({ ...current, [name]: value }));
+    if (name === "username") {
+      setUsernameState("idle");
+    }
   }
+
+  useEffect(() => {
+    if (step !== 2) return;
+    const username = form.username.trim();
+    if (username.length < 3) {
+      setUsernameState("idle");
+      return;
+    }
+
+    const handle = window.setTimeout(() => {
+      setUsernameState("checking");
+      void (async () => {
+        try {
+          const payload = await checkUsernameAvailability(username);
+          setUsernameState(payload.available ? "available" : "taken");
+        } catch {
+          setUsernameState("idle");
+        }
+      })();
+    }, 350);
+
+    return () => window.clearTimeout(handle);
+  }, [form.username, step]);
 
   function handleNext() {
     setError(null);
@@ -101,6 +128,11 @@ export function SignUpForm() {
     const value = form[currentStep.field].trim();
     if (!value) {
       setError("Please fill this in to continue.");
+      return;
+    }
+
+    if (currentStep.field === "username" && usernameState === "taken") {
+      setError("That username is already taken.");
       return;
     }
 
@@ -136,7 +168,7 @@ export function SignUpForm() {
       </div>
 
       <div className="space-y-3">
-        <p className="text-xs uppercase tracking-[0.3em] text-[#8fb7d5]">
+        <p className="text-[11px] uppercase tracking-[0.35em] text-[#8fb7d5]">
           Step {step} of {steps.length}
         </p>
         <h2 className="text-2xl font-semibold text-white">{currentStep.title}</h2>
@@ -153,6 +185,17 @@ export function SignUpForm() {
         autoComplete={currentStep.field}
         required
       />
+      {step === 2 ? (
+        <p className="text-sm text-[#b9c6d3]">
+          {usernameState === "checking"
+            ? "Checking availability..."
+            : usernameState === "available"
+              ? "Nice, that username is available."
+              : usernameState === "taken"
+                ? "That username is already taken."
+                : "We’ll check this as you type."}
+        </p>
+      ) : null}
 
       {error ? <p className="text-sm text-red-300">{error}</p> : null}
 
@@ -161,7 +204,7 @@ export function SignUpForm() {
           <button
             type="button"
             onClick={() => setStep((current) => current - 1)}
-            className="rounded-[16px] border border-white/10 bg-[#0d1720] px-4 py-3 text-sm font-semibold text-[#dbe6ee]"
+            className="rounded-[14px] border border-white/10 bg-[#101820] px-4 py-3 text-sm font-semibold text-[#dbe6ee]"
           >
             Back
           </button>

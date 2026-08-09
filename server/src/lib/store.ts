@@ -1,4 +1,5 @@
 import crypto from "crypto";
+import { prisma } from "./db.js";
 
 export type UserRecord = {
   id: string;
@@ -9,17 +10,8 @@ export type UserRecord = {
   bio: string;
   rank: string;
   interests: string[];
-  picture?: string;
+  picture?: string | null;
 };
-
-export type SessionRecord = {
-  token: string;
-  userId: string;
-  createdAt: string;
-};
-
-const users = new Map<string, UserRecord>();
-const sessions = new Map<string, SessionRecord>();
 
 export const defaultInterests = [
   "Football",
@@ -37,99 +29,171 @@ export const defaultInterests = [
   "Sports",
 ];
 
-function rankFor(user: UserRecord) {
-  if (user.interests.length >= 6) return "Professional";
-  if (user.interests.length >= 3) return "Amateur";
+function rankFor(interests: string[]) {
+  if (interests.length >= 6) return "Professional";
+  if (interests.length >= 3) return "Amateur";
   return "Novice";
 }
 
-export function createUser(input: {
+function toUserRecord(user: {
+  id: string;
+  username: string;
+  email: string;
+  passwordHash: string;
+  displayName: string;
+  bio: string;
+  rank: string;
+  interests: unknown;
+  picture: string | null;
+}): UserRecord {
+  return {
+    id: user.id,
+    username: user.username,
+    email: user.email,
+    password: user.passwordHash,
+    displayName: user.displayName,
+    bio: user.bio,
+    rank: user.rank,
+    interests: Array.isArray(user.interests) ? user.interests.filter((item): item is string => typeof item === "string") : [],
+    picture: user.picture,
+  };
+}
+
+export async function createUser(input: {
   username: string;
   email: string;
   password: string;
   displayName: string;
 }) {
-  if ([...users.values()].some((user) => user.email === input.email || user.username === input.username)) {
+  const existing = await prisma.user.findFirst({
+    where: {
+      OR: [{ email: input.email }, { username: input.username }],
+    },
+  });
+
+  if (existing) {
     throw new Error("User already exists");
   }
 
-  const user: UserRecord = {
-    id: crypto.randomUUID(),
-    username: input.username,
-    email: input.email,
-    password: input.password,
-    displayName: input.displayName,
-    bio: "New to 2go 2.0",
-    rank: "Novice",
-    interests: [],
-  };
+  const user = await prisma.user.create({
+    data: {
+      username: input.username,
+      email: input.email,
+      passwordHash: input.password,
+      displayName: input.displayName,
+      bio: "New to 2go 2.0",
+      rank: "Novice",
+      interests: [],
+    },
+  });
 
-  users.set(user.id, user);
-  return user;
+  return toUserRecord(user);
 }
 
-export function findUserByEmail(email: string) {
-  return [...users.values()].find((user) => user.email === email);
+export async function isUsernameAvailable(username: string) {
+  const existing = await prisma.user.findUnique({
+    where: { username },
+    select: { id: true },
+  });
+
+  return !existing;
 }
 
-export function findUserById(id: string) {
-  return users.get(id);
+export async function findUserByEmail(email: string) {
+  const user = await prisma.user.findUnique({ where: { email } });
+  return user ? toUserRecord(user) : undefined;
 }
 
-export function findUserByUsername(username: string) {
-  return [...users.values()].find((user) => user.username === username);
+export async function findUserById(id: string) {
+  const user = await prisma.user.findUnique({ where: { id } });
+  return user ? toUserRecord(user) : undefined;
 }
 
-export function updateUser(userId: string, patch: Partial<Pick<UserRecord, "displayName" | "bio" | "picture" | "interests">>) {
-  const user = users.get(userId);
+export async function findUserByUsername(username: string) {
+  const user = await prisma.user.findUnique({ where: { username } });
+  return user ? toUserRecord(user) : undefined;
+}
 
-  if (!user) {
+export async function updateUser(
+  userId: string,
+  patch: Partial<Pick<UserRecord, "displayName" | "bio" | "picture" | "interests">>,
+) {
+  const current = await prisma.user.findUnique({ where: { id: userId } });
+
+  if (!current) {
     throw new Error("User not found");
   }
 
-  if (patch.displayName !== undefined) user.displayName = patch.displayName;
-  if (patch.bio !== undefined) user.bio = patch.bio;
-  if (patch.picture !== undefined) user.picture = patch.picture;
-  if (patch.interests !== undefined) {
-    user.interests = patch.interests;
-    user.rank = rankFor(user);
+  const interests = patch.interests ?? (Array.isArray(current.interests) ? (current.interests as string[]) : []);
+  const updated = await prisma.user.update({
+    where: { id: userId },
+    data: {
+      displayName: patch.displayName ?? current.displayName,
+      bio: patch.bio ?? current.bio,
+      picture: patch.picture === undefined ? current.picture : patch.picture,
+      interests,
+      rank: rankFor(interests),
+    },
+  });
+
+  return toUserRecord(updated);
+}
+
+export async function createSession(userId: string) {
+  const session = await prisma.session.create({
+    data: {
+      userId,
+      token: crypto.randomUUID(),
+      expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24 * 30),
+    },
+  });
+
+  return session.token;
+}
+
+export async function deleteSession(token: string) {
+  await prisma.session.deleteMany({ where: { token } });
+}
+
+export async function getUserFromSession(token: string | undefined) {
+  if (!token) return undefined;
+
+  const session = await prisma.session.findUnique({
+    where: { token },
+    include: { user: true },
+  });
+
+  if (!session || session.expiresAt < new Date()) {
+    if (session) {
+      await prisma.session.delete({ where: { token } }).catch(() => undefined);
+    }
+    return undefined;
   }
 
-  return user;
+  return toUserRecord(session.user);
 }
 
-export function createSession(userId: string) {
-  const token = crypto.randomUUID();
-  sessions.set(token, {
-    token,
-    userId,
-    createdAt: new Date().toISOString(),
+export async function seedDemoUser() {
+  const existing = await prisma.user.findUnique({ where: { username: "tobitter" } });
+  if (existing) return;
+
+  const user = await prisma.user.create({
+    data: {
+      username: "tobitter",
+      email: "praise@2go.local",
+      passwordHash: "password",
+      displayName: "Praise",
+      bio: "Building things - Backend - FinTech - AI",
+      rank: "Amateur",
+      interests: ["Tech", "Football", "Music"],
+    },
   });
-  return token;
-}
 
-export function deleteSession(token: string) {
-  sessions.delete(token);
-}
-
-export function getUserFromSession(token: string | undefined) {
-  if (!token) return undefined;
-  const session = sessions.get(token);
-  if (!session) return undefined;
-  return users.get(session.userId);
-}
-
-export function seedDemoUser() {
-  if (users.size > 0) return;
-  const user = createUser({
-    username: "tobitter",
-    email: "praise@2go.local",
-    password: "password",
-    displayName: "Praise",
+  await prisma.session.create({
+    data: {
+      userId: user.id,
+      token: crypto.randomUUID(),
+      expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24 * 30),
+    },
   });
-  updateUser(user.id, {
-    bio: "Building things - Backend - FinTech - AI",
-    interests: ["Tech", "Football", "Music"],
-  });
-  createSession(user.id);
 }

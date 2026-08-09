@@ -5,10 +5,12 @@ import {
   createUser,
   deleteSession,
   findUserByEmail,
+  isUsernameAvailable,
   getUserFromSession,
   seedDemoUser,
 } from "../lib/store.js";
 import { clearSessionCookie, getCookie, setSessionCookie } from "../lib/http.js";
+import type { UserRecord } from "../lib/store.js";
 
 export const authRouter = Router();
 
@@ -24,7 +26,7 @@ const loginSchema = z.object({
   password: z.string().min(6),
 });
 
-function publicUser(user: ReturnType<typeof getUserFromSession> extends infer T ? T : never) {
+function publicUser(user: UserRecord) {
   if (!user) return null;
   return {
     id: user.id,
@@ -38,17 +40,28 @@ function publicUser(user: ReturnType<typeof getUserFromSession> extends infer T 
   };
 }
 
-seedDemoUser();
+void seedDemoUser();
 
-authRouter.post("/register", (req, res) => {
+authRouter.get("/username-available", async (req, res) => {
+  const username = String(req.query.username ?? "").trim();
+
+  if (username.length < 3) {
+    return res.status(400).json({ error: "Username too short" });
+  }
+
+  const available = await isUsernameAvailable(username);
+  return res.json({ available });
+});
+
+authRouter.post("/register", async (req, res) => {
   const parsed = registerSchema.safeParse(req.body);
   if (!parsed.success) {
     return res.status(400).json({ error: "Invalid registration details" });
   }
 
   try {
-    const user = createUser(parsed.data);
-    const token = createSession(user.id);
+    const user = await createUser(parsed.data);
+    const token = await createSession(user.id);
     setSessionCookie(res, token);
     return res.status(201).json({ user: publicUser(user) });
   } catch (error) {
@@ -56,24 +69,24 @@ authRouter.post("/register", (req, res) => {
   }
 });
 
-authRouter.post("/login", (req, res) => {
+authRouter.post("/login", async (req, res) => {
   const parsed = loginSchema.safeParse(req.body);
   if (!parsed.success) {
     return res.status(400).json({ error: "Invalid login details" });
   }
 
-  const user = findUserByEmail(parsed.data.email);
+  const user = await findUserByEmail(parsed.data.email);
   if (!user || user.password !== parsed.data.password) {
     return res.status(401).json({ error: "Invalid email or password" });
   }
 
-  const token = createSession(user.id);
+  const token = await createSession(user.id);
   setSessionCookie(res, token);
   return res.json({ user: publicUser(user) });
 });
 
-authRouter.get("/me", (req, res) => {
-  const user = getUserFromSession(getCookie(req, "2go_session"));
+authRouter.get("/me", async (req, res) => {
+  const user = await getUserFromSession(getCookie(req, "2go_session"));
   if (!user) {
     return res.status(401).json({ error: "Not authenticated" });
   }
@@ -81,9 +94,9 @@ authRouter.get("/me", (req, res) => {
   return res.json({ user: publicUser(user) });
 });
 
-authRouter.post("/logout", (req, res) => {
+authRouter.post("/logout", async (req, res) => {
   const token = getCookie(req, "2go_session");
-  if (token) deleteSession(token);
+  if (token) await deleteSession(token);
   clearSessionCookie(res);
   return res.json({ ok: true });
 });
