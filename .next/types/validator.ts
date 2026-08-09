@@ -227,6 +227,24 @@ type RouteHandlerConfig<Route extends AppRouteHandlerRoutes = AppRouteHandlerRou
   type __Unused = __Check
 }
 
+// Validate ../../src/app/api/rooms/[slug]/route.ts
+{
+  type __IsExpected<Specific extends RouteHandlerConfig<"/api/rooms/[slug]">> = Specific
+  const handler = {} as typeof import("../../src/app/api/rooms/[slug]/route.js")
+  type __Check = __IsExpected<typeof handler>
+  // @ts-ignore
+  type __Unused = __Check
+}
+
+// Validate ../../src/app/api/rooms/route.ts
+{
+  type __IsExpected<Specific extends RouteHandlerConfig<"/api/rooms">> = Specific
+  const handler = {} as typeof import("../../src/app/api/rooms/route.js")
+  type __Check = __IsExpected<typeof handler>
+  // @ts-ignore
+  type __Unused = __Check
+}
+
 
 
 

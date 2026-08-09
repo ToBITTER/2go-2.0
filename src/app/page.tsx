@@ -1,8 +1,13 @@
 import { ArrowRight, CircleDot, MessageSquareText, Users } from "lucide-react";
 import { AppShell } from "@/components/layout/app-shell";
+import { cookies } from "next/headers";
+import { getUserFromSession } from "@/lib/store";
 import Link from "next/link";
 
-export default function Page() {
+export default async function Page() {
+  const cookieStore = await cookies();
+  const user = await getUserFromSession(cookieStore.get("2go_session")?.value);
+
   return (
     <AppShell title="Home" subtitle="Who's around?" actionLabel="Sign up" actionHref="/auth/sign-up">
       <section className="flex min-h-[calc(100vh-2rem)] flex-col gap-6 pb-16 pt-8">
@@ -20,18 +25,37 @@ export default function Page() {
             </p>
 
             <div className="mt-8 flex flex-wrap gap-3">
-              <Link
-                href="/auth/sign-up"
-                className="inline-flex items-center justify-center rounded-full bg-[#e7f0f7] px-6 py-3 text-sm font-semibold text-[#163042]"
-              >
-                Sign up
-              </Link>
-              <Link
-                href="/auth/sign-in"
-                className="inline-flex items-center justify-center rounded-full border border-white/10 bg-[#0d1720] px-6 py-3 text-sm font-semibold text-[#dbe6ee]"
-              >
-                Log in
-              </Link>
+              {user ? (
+                <>
+                  <Link
+                    href="/rooms"
+                    className="inline-flex items-center justify-center rounded-full bg-[#e7f0f7] px-6 py-3 text-sm font-semibold text-[#163042]"
+                  >
+                    Enter rooms
+                  </Link>
+                  <Link
+                    href="/profile"
+                    className="inline-flex items-center justify-center rounded-full border border-white/10 bg-[#0d1720] px-6 py-3 text-sm font-semibold text-[#dbe6ee]"
+                  >
+                    Your profile
+                  </Link>
+                </>
+              ) : (
+                <>
+                  <Link
+                    href="/auth/sign-up"
+                    className="inline-flex items-center justify-center rounded-full bg-[#e7f0f7] px-6 py-3 text-sm font-semibold text-[#163042]"
+                  >
+                    Sign up
+                  </Link>
+                  <Link
+                    href="/auth/sign-in"
+                    className="inline-flex items-center justify-center rounded-full border border-white/10 bg-[#0d1720] px-6 py-3 text-sm font-semibold text-[#dbe6ee]"
+                  >
+                    Log in
+                  </Link>
+                </>
+              )}
             </div>
           </div>
 
