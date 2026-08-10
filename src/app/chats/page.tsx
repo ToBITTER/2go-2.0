@@ -13,6 +13,7 @@ export default function ChatsPage() {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [usernameQuery, setUsernameQuery] = useState("");
   const [composer, setComposer] = useState("");
   const [pending, startTransition] = useTransition();
 
@@ -74,6 +75,22 @@ export default function ChatsPage() {
     });
   }
 
+  function onStartChat() {
+    const username = usernameQuery.trim().replace(/^@/, "");
+    if (!username) return;
+
+    setError(null);
+    startTransition(async () => {
+      try {
+        const payload = await startChatWithUser(username);
+        await loadChats();
+        setActiveChatId(payload.conversationId);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Unable to start chat");
+      }
+    });
+  }
+
   return (
     <AppShell title="Chats" subtitle="Private conversations that feel fast and alive.">
       <div className="space-y-6">
@@ -82,6 +99,26 @@ export default function ChatsPage() {
         <div className="grid gap-4 lg:grid-cols-[0.38fr_0.62fr]">
           <aside className="space-y-3 rounded-[20px] border border-white/10 bg-[#13202b] p-4 shadow-soft">
             <p className="text-xs uppercase tracking-[0.3em] text-[#8fb7d5]">Direct</p>
+            <div className="space-y-2 rounded-[18px] border border-white/10 bg-[#0d1720] p-3">
+              <p className="text-xs uppercase tracking-[0.25em] text-[#8fb7d5]">Start a chat</p>
+              <div className="flex gap-2">
+                <input
+                  value={usernameQuery}
+                  onChange={(event) => setUsernameQuery(event.target.value)}
+                  placeholder="Username"
+                  className="min-w-0 flex-1 rounded-[14px] border border-white/10 bg-[#13202b] px-4 py-3 text-sm text-white outline-none placeholder:text-[#7f95a9]"
+                />
+                <button
+                  type="button"
+                  disabled={!usernameQuery.trim() || pending}
+                  onClick={onStartChat}
+                  className="rounded-[14px] bg-[#e7f0f7] px-4 py-3 text-sm font-semibold text-[#163042]"
+                >
+                  Go
+                </button>
+              </div>
+              <p className="text-xs text-[#b9c6d3]">Type a username to open or create a conversation.</p>
+            </div>
             {loading ? (
               <div className="rounded-[18px] border border-white/10 bg-[#0d1720] p-4 text-sm text-[#b9c6d3]">Loading chats...</div>
             ) : chats.length ? (
@@ -108,7 +145,7 @@ export default function ChatsPage() {
               ))
             ) : (
               <div className="rounded-[18px] border border-white/10 bg-[#0d1720] p-4 text-sm text-[#b9c6d3]">
-                No chats yet. Open a profile and say hi.
+                No chats yet. Type a username above or open a profile and say hi.
               </div>
             )}
           </aside>
