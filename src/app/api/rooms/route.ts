@@ -5,8 +5,7 @@ import { getUserFromSession, listRooms } from "@/lib/store";
 export async function GET() {
   const cookieStore = await cookies();
   const user = await getUserFromSession(cookieStore.get("2go_session")?.value);
-  if (!user) return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
 
-  const rooms = await listRooms(user.id);
+  const rooms = await listRooms(user?.id);
   return NextResponse.json({ rooms });
 }
