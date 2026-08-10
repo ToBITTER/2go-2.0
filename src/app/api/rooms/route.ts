@@ -7,6 +7,6 @@ export async function GET() {
   const user = await getUserFromSession(cookieStore.get("2go_session")?.value);
   if (!user) return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
 
-  const rooms = await listRooms();
+  const rooms = await listRooms(user.id);
   return NextResponse.json({ rooms });
 }

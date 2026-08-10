@@ -7,7 +7,6 @@ import {
   findUserByEmail,
   isUsernameAvailable,
   getUserFromSession,
-  seedDemoUser,
 } from "../lib/store.js";
 import { clearSessionCookie, getCookie, setSessionCookie } from "../lib/http.js";
 import type { UserRecord } from "../lib/store.js";
@@ -39,8 +38,6 @@ function publicUser(user: UserRecord) {
     picture: user.picture,
   };
 }
-
-void seedDemoUser();
 
 authRouter.get("/username-available", async (req, res) => {
   const username = String(req.query.username ?? "").trim();

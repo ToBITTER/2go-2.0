@@ -34,8 +34,20 @@ async function request<T>(path: string, options: RequestOptions = {}, baseUrl?: 
   })() : null;
 
   if (!response.ok) {
-    const details = payload?.error ?? payload?.message ?? rawText;
-    throw new Error(details ? `${response.status} ${details}` : `${response.status} Request failed`);
+    const details = payload?.error ?? payload?.message ?? "";
+    const friendly =
+      response.status === 400
+        ? "Please check the form and try again."
+        : response.status === 401
+          ? "You need to sign in again."
+          : response.status === 404
+            ? "We couldn't find that."
+            : response.status === 409
+              ? "That already exists."
+              : response.status >= 500
+                ? "Something went wrong on our side."
+                : "Request failed. Please try again.";
+    throw new Error(details && !/invalid|syntax|unexpected token/i.test(details) ? details : friendly);
   }
 
   return (payload ?? (rawText ? JSON.parse(rawText) : null)) as T;

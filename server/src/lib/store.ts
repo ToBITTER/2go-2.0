@@ -172,28 +172,3 @@ export async function getUserFromSession(token: string | undefined) {
 
   return toUserRecord(session.user);
 }
-
-export async function seedDemoUser() {
-  const existing = await prisma.user.findUnique({ where: { username: "tobitter" } });
-  if (existing) return;
-
-  const user = await prisma.user.create({
-    data: {
-      username: "tobitter",
-      email: "praise@2go.local",
-      passwordHash: "password",
-      displayName: "Praise",
-      bio: "Building things - Backend - FinTech - AI",
-      rank: "Amateur",
-      interests: ["Tech", "Football", "Music"],
-    },
-  });
-
-  await prisma.session.create({
-    data: {
-      userId: user.id,
-      token: crypto.randomUUID(),
-      expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24 * 30),
-    },
-  });
-}

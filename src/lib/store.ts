@@ -162,11 +162,7 @@ export async function getUserFromSession(token: string | undefined) {
   return toUserRecord(session.user);
 }
 
-export async function seedDemoUser() {
-  return;
-}
-
-function toConversationSummary(conversation: {
+function toConversationSummary(userId: string, conversation: {
   id: string;
   updatedAt: Date;
   messages: Array<{
@@ -197,7 +193,7 @@ function toConversationSummary(conversation: {
     rank: user.rank,
     picture: user.picture,
   }));
-  const other = members[0];
+  const other = members.find((member) => member.id !== userId) ?? members[0];
   const lastMessage = conversation.messages[0];
   return {
     id: conversation.id,
@@ -220,7 +216,7 @@ export async function listConversations(userId: string) {
     orderBy: { updatedAt: "desc" },
   });
 
-  return conversations.map((conversation) => toConversationSummary(conversation));
+  return conversations.map((conversation) => toConversationSummary(userId, conversation));
 }
 
 export async function getConversationById(conversationId: string, userId: string) {
@@ -338,7 +334,7 @@ export async function listRooms(userId?: string) {
     take: 6,
     include: { messages: { orderBy: { createdAt: "desc" }, take: 1 }, memberships: true },
   });
-  return rooms.map((room) => ({
+  const summaries: RoomSummary[] = rooms.map((room) => ({
     id: room.id,
     slug: room.slug,
     name: room.name,
@@ -349,7 +345,9 @@ export async function listRooms(userId?: string) {
     joined: userId ? room.memberships.some((membership) => membership.userId === userId) : false,
     lastMessage: room.messages[0]?.body ?? "Say something to start the room.",
     lastMessageAt: room.updatedAt.toISOString(),
-  })) satisfies RoomSummary[];
+  }));
+
+  return summaries;
 }
 
 export async function getRoomBySlug(slug: string, userId?: string) {
