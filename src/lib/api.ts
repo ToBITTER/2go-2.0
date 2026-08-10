@@ -173,6 +173,10 @@ export async function getRooms() {
   return request<{ rooms: RoomSummary[] }>("/api/rooms");
 }
 
+export async function getUsers() {
+  return request<{ users: AuthUser[] }>("/api/users");
+}
+
 export async function getRoom(slug: string) {
   return request<{ room: RoomSummary; messages: RoomMessage[] }>(`/api/rooms/${encodeURIComponent(slug)}`);
 }

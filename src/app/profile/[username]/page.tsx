@@ -42,7 +42,7 @@ export default async function PublicProfilePage({ params }: Props) {
             </div>
             <div className="mt-6">
               <Link
-                href={`/chats`}
+                href={`/chats?with=${encodeURIComponent(payload.user.username)}`}
                 className="inline-flex items-center justify-center rounded-full bg-[#e7f0f7] px-5 py-3 text-sm font-semibold text-[#163042]"
               >
                 Message them

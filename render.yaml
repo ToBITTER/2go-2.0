@@ -9,38 +9,14 @@ services:
     envVars:
       - key: NODE_ENV
         value: production
-      - key: API_BASE_URL
-        fromService:
-          type: web
-          name: 2go-2-0-api
-          envVarKey: RENDER_EXTERNAL_URL
-      - key: NEXT_PUBLIC_API_URL
-        fromService:
-          type: web
-          name: 2go-2-0-api
-          envVarKey: RENDER_EXTERNAL_URL
-
-  - type: web
-    name: 2go-2-0-api
-    env: node
-    plan: starter
-    rootDir: server
-    buildCommand: npm run build
-    startCommand: npm start
-    envVars:
-      - key: NODE_ENV
-        value: production
-      - key: PORT
-        value: 10000
-      - key: CLIENT_ORIGIN
-        fromService:
-          type: web
-          name: 2go-2-0-web
-          envVarKey: RENDER_EXTERNAL_URL
       - key: DATABASE_URL
         fromDatabase:
           name: 2go-2-0-db
           property: connectionString
+      - key: NEXT_PUBLIC_API_URL
+        value: ""
+      - key: API_BASE_URL
+        value: ""
 
 databases:
   - name: 2go-2-0-db

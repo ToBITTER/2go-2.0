@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState, useTransition } from "react";
+import Link from "next/link";
 import { AppShell } from "@/components/layout/app-shell";
 import { SectionHeading } from "@/components/section-heading";
 import { getRooms, getRoom, sendRoomMessage, type RoomMessage, type RoomSummary } from "@/lib/api";
@@ -52,13 +53,13 @@ export default function RoomsPage() {
         <div className="grid gap-4 lg:grid-cols-[0.34fr_0.66fr]">
           <aside className="space-y-3 rounded-[20px] border border-white/10 bg-[#13202b] p-4 shadow-soft">
             {rooms.map((room) => (
-              <button
+              <Link
                 key={room.slug}
-                type="button"
-                onClick={() => setActiveSlug(room.slug)}
-                className={`w-full rounded-[18px] border p-4 text-left transition ${
+                href={`/rooms/${encodeURIComponent(room.slug)}`}
+                className={`block w-full rounded-[18px] border p-4 text-left transition ${
                   activeSlug === room.slug ? "border-[#8fb7d5]/40 bg-[#0d1720]" : "border-white/10 bg-[#0d1720]/70 hover:bg-[#111c26]"
                 }`}
+                onClick={() => setActiveSlug(room.slug)}
               >
                 <p className="text-lg font-semibold text-white">{room.name}</p>
                 <p className="mt-2 text-sm text-[#b9c6d3]">{room.description}</p>
@@ -66,7 +67,7 @@ export default function RoomsPage() {
                   <p className="text-[#dbe6ee]">{room.members} members</p>
                   <p className="text-[#8fb7d5]">{room.online} online</p>
                 </div>
-              </button>
+              </Link>
             ))}
           </aside>
 

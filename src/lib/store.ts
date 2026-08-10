@@ -114,6 +114,15 @@ export async function findUserByUsername(username: string) {
   return user ? toUserRecord(user) : undefined;
 }
 
+export async function listUsers(excludeUserId?: string) {
+  const users = await prisma.user.findMany({
+    where: excludeUserId ? { id: { not: excludeUserId } } : undefined,
+    orderBy: { updatedAt: "desc" },
+    take: 24,
+  });
+  return users.map(toUserRecord);
+}
+
 export async function updateUser(userId: string, patch: Partial<Pick<UserRecord, "displayName" | "bio" | "picture" | "interests">>) {
   const current = await prisma.user.findUnique({ where: { id: userId } });
   if (!current) throw new Error("User not found");
@@ -327,4 +336,8 @@ export async function listRoomMessages(roomId: string) {
     include: { messages: { orderBy: { createdAt: "asc" }, include: { sender: true } } },
   });
   return room?.messages.map(toRoomMessagePayload) ?? [];
+}
+
+export async function listRoomsByCategory() {
+  return listRooms();
 }
