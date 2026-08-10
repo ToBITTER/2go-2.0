@@ -38,6 +38,7 @@ export type RoomSummary = {
   category: string;
   online: number;
   members: number;
+  joined: boolean;
   lastMessage: string;
   lastMessageAt: string;
 };
@@ -292,7 +293,7 @@ function toRoomMessagePayload(message: {
   };
 }
 
-export async function listRooms() {
+export async function listRooms(userId?: string) {
   const existingCount = await prisma.room.count();
   if (existingCount === 0) {
     await prisma.room.createMany({
@@ -335,7 +336,7 @@ export async function listRooms() {
   const rooms = await prisma.room.findMany({
     orderBy: { updatedAt: "desc" },
     take: 6,
-    include: { messages: { orderBy: { createdAt: "desc" }, take: 1 } },
+    include: { messages: { orderBy: { createdAt: "desc" }, take: 1 }, memberships: true },
   });
   return rooms.map((room) => ({
     id: room.id,
@@ -343,18 +344,19 @@ export async function listRooms() {
     name: room.name,
     description: room.description,
     category: room.category,
-    online: Math.max(0, room.messages.length * 12 + 24),
-    members: Math.max(0, room.messages.length * 100 + 200),
+    members: room.memberships.length,
+    joined: userId ? room.memberships.some((membership) => membership.userId === userId) : false,
     lastMessage: room.messages[0]?.body ?? "Say something to start the room.",
     lastMessageAt: room.updatedAt.toISOString(),
   })) satisfies RoomSummary[];
 }
 
-export async function getRoomBySlug(slug: string) {
+export async function getRoomBySlug(slug: string, userId?: string) {
   const room = await prisma.room.findUnique({
     where: { slug },
     include: {
       messages: { orderBy: { createdAt: "asc" }, include: { sender: true } },
+      memberships: userId ? { where: { userId }, take: 1 } : true,
     },
   });
   return room;
@@ -379,4 +381,31 @@ export async function listRoomMessages(roomId: string) {
 
 export async function listRoomsByCategory() {
   return listRooms();
+}
+
+export async function joinRoom(roomId: string, userId: string) {
+  await prisma.roomMembership.upsert({
+    where: { roomId_userId: { roomId, userId } },
+    update: {},
+    create: { roomId, userId },
+  });
+}
+
+export async function isRoomJoined(roomId: string, userId: string) {
+  const existing = await prisma.roomMembership.findUnique({
+    where: { roomId_userId: { roomId, userId } },
+    select: { id: true },
+  });
+  return Boolean(existing);
+}
+
+export async function getRoomBySlugForUser(slug: string, userId: string) {
+  const room = await prisma.room.findUnique({
+    where: { slug },
+    include: {
+      messages: { orderBy: { createdAt: "asc" }, include: { sender: true } },
+      memberships: { where: { userId }, take: 1 },
+    },
+  });
+  return room;
 }

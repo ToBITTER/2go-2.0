@@ -81,6 +81,7 @@ export type RoomSummary = {
   category: string;
   online: number;
   members: number;
+  joined: boolean;
   lastMessage: string;
   lastMessageAt: string;
 };
@@ -181,10 +182,17 @@ export async function getRoom(slug: string) {
   return request<{ room: RoomSummary; messages: RoomMessage[] }>(`/api/rooms/${encodeURIComponent(slug)}`);
 }
 
+export async function joinRoom(slug: string) {
+  return request<{ joined: boolean }>(`/api/rooms/${encodeURIComponent(slug)}`, {
+    method: "POST",
+    json: { action: "join" },
+  });
+}
+
 export async function sendRoomMessage(slug: string, body: string) {
   return request<{ message: RoomMessage }>(`/api/rooms/${encodeURIComponent(slug)}`, {
     method: "POST",
-    json: { body },
+    json: { action: "message", body },
   });
 }
 

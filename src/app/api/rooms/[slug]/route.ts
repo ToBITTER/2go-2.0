@@ -1,7 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { z } from "zod";
-import { createRoomMessage, getRoomBySlug, getUserFromSession, listRoomMessages } from "@/lib/store";
+import {
+  createRoomMessage,
+  getRoomBySlugForUser,
+  getUserFromSession,
+  joinRoom,
+  listRoomMessages,
+  isRoomJoined,
+} from "@/lib/store";
 
 export async function GET(_request: NextRequest, { params }: { params: Promise<{ slug: string }> }) {
   const cookieStore = await cookies();
@@ -9,9 +16,10 @@ export async function GET(_request: NextRequest, { params }: { params: Promise<{
   if (!user) return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
 
   const { slug } = await params;
-  const room = await getRoomBySlug(slug);
+  const room = await getRoomBySlugForUser(slug, user.id);
   if (!room) return NextResponse.json({ error: "Room not found" }, { status: 404 });
   const messages = await listRoomMessages(room.id);
+  const joined = await isRoomJoined(room.id, user.id);
 
   return NextResponse.json({
     room: {
@@ -20,8 +28,9 @@ export async function GET(_request: NextRequest, { params }: { params: Promise<{
       name: room.name,
       description: room.description,
       category: room.category,
-      online: Math.max(0, messages.length * 12 + 24),
-      members: Math.max(0, messages.length * 100 + 200),
+      online: room.memberships.length,
+      members: room.memberships.length,
+      joined,
       lastMessage: messages.at(-1)?.body ?? "Say something to start the room.",
       lastMessageAt: room.updatedAt.toISOString(),
     },
@@ -39,12 +48,22 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
   if (!user) return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
 
   const { slug } = await params;
-  const room = await getRoomBySlug(slug);
+  const room = await getRoomBySlugForUser(slug, user.id);
   if (!room) return NextResponse.json({ error: "Room not found" }, { status: 404 });
 
   const body = await request.json().catch(() => null);
+  if (body?.action === "join") {
+    await joinRoom(room.id, user.id);
+    return NextResponse.json({ joined: true });
+  }
+
   const parsed = roomMessageSchema.safeParse(body);
   if (!parsed.success) return NextResponse.json({ error: "Message cannot be empty" }, { status: 400 });
+
+  const alreadyJoined = await isRoomJoined(room.id, user.id);
+  if (!alreadyJoined) {
+    return NextResponse.json({ error: "Join the room first" }, { status: 403 });
+  }
 
   const message = await createRoomMessage(room.id, user.id, parsed.data.body.trim());
   return NextResponse.json({ message });

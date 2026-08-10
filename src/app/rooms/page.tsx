@@ -64,8 +64,8 @@ export default function RoomsPage() {
                 <p className="text-lg font-semibold text-white">{room.name}</p>
                 <p className="mt-2 text-sm text-[#b9c6d3]">{room.description}</p>
                 <div className="mt-4 flex items-center justify-between text-sm">
-                  <p className="text-[#dbe6ee]">{room.members} members</p>
-                  <p className="text-[#8fb7d5]">{room.online} online</p>
+                  <p className="text-[#dbe6ee]">{room.members} joined</p>
+                  <p className="text-[#8fb7d5]">{room.joined ? "You joined" : "Open"}</p>
                 </div>
               </Link>
             ))}
@@ -90,7 +90,7 @@ export default function RoomsPage() {
                 ))
               ) : (
                 <div className="rounded-[18px] border border-dashed border-white/10 bg-[#0d1720] p-6 text-sm text-[#b9c6d3]">
-                  This room is quiet right now. Start the first line.
+                  This room is quiet right now. Join the room and start the first line.
                 </div>
               )}
             </div>
