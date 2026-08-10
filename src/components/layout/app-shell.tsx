@@ -69,8 +69,8 @@ export function AppShell({
 
   return (
     <main className="min-h-screen bg-app text-paper">
-      <div className="mx-auto flex w-full max-w-7xl gap-6 px-4 py-4 md:px-8">
-        <aside className="sticky top-4 hidden h-[calc(100vh-2rem)] w-72 flex-col justify-between overflow-hidden rounded-[22px] border border-white/10 bg-[#13202b] p-4 shadow-soft lg:flex">
+      <div className="mx-auto flex w-full max-w-7xl gap-6 px-3 py-3 sm:px-4 md:px-6 lg:px-8">
+        <aside className="sticky top-4 hidden h-[calc(100vh-2rem)] w-80 flex-col justify-between overflow-hidden rounded-[22px] border border-white/10 bg-[#13202b] p-4 shadow-soft lg:flex">
           <div>
             <div className="flex items-center gap-3 rounded-[18px] bg-[#0d1720] px-3 py-3">
               <div className="grid h-11 w-11 place-items-center overflow-hidden rounded-[14px] bg-[#e9f0f7]">
@@ -160,7 +160,7 @@ export function AppShell({
           </div>
         </aside>
 
-        <section className="flex-1">
+        <section className="min-w-0 flex-1 pb-20 lg:pb-0">
           <div className="mb-4 flex items-center justify-between rounded-[18px] border border-white/10 bg-[#13202b] px-4 py-3 shadow-soft lg:hidden">
             <div>
               <p className="text-[11px] uppercase tracking-[0.3em] text-[#8fb7d5]">2go 2.0</p>
@@ -185,7 +185,7 @@ export function AppShell({
             )}
           </div>
           {children}
-          <nav className="sticky bottom-4 mt-6 grid grid-cols-5 gap-2 rounded-[18px] border border-white/10 bg-[#13202b]/95 p-2 shadow-soft lg:hidden">
+          <nav className="fixed inset-x-3 bottom-3 z-40 grid grid-cols-5 gap-2 rounded-[18px] border border-white/10 bg-[#13202b]/95 p-2 shadow-soft backdrop-blur lg:hidden sm:inset-x-4">
             {mainNavigation.map((item) => (
               <Link
                 key={item.href}
@@ -198,7 +198,7 @@ export function AppShell({
                 }`}
               >
                 <item.icon className="h-4 w-4" />
-                {item.label}
+                <span className="leading-none">{item.label}</span>
               </Link>
             ))}
           </nav>

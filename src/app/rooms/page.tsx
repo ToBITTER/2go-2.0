@@ -64,7 +64,7 @@ export default function RoomsPage() {
 
   return (
     <AppShell title="Rooms" subtitle="Public rooms and good noise.">
-      <div className="space-y-6">
+      <div className="space-y-5 md:space-y-6">
         <SectionHeading eyebrow="Communities" title="Rooms that feel alive" description="Pick a room and step into the conversation." />
         {error ? (
           <div className="rounded-[18px] border border-red-400/20 bg-red-500/10 px-4 py-3 text-sm text-red-100">
@@ -72,28 +72,33 @@ export default function RoomsPage() {
           </div>
         ) : null}
         <div className="grid gap-4 lg:grid-cols-[0.34fr_0.66fr]">
-          <aside className="space-y-3 rounded-[20px] border border-white/10 bg-[#13202b] p-4 shadow-soft">
+          <aside className="space-y-3 rounded-[22px] border border-white/10 bg-[#13202b] p-4 shadow-soft md:p-5">
             {loading ? (
               <div className="rounded-[18px] border border-white/10 bg-[#0d1720] p-4 text-sm text-[#b9c6d3]">
                 Loading rooms...
               </div>
             ) : rooms.length ? (
               rooms.map((room) => (
-              <Link
-                key={room.slug}
-                href={`/rooms/${encodeURIComponent(room.slug)}`}
-                className={`block w-full rounded-[18px] border p-4 text-left transition ${
-                  activeSlug === room.slug ? "border-[#8fb7d5]/40 bg-[#0d1720]" : "border-white/10 bg-[#0d1720]/70 hover:bg-[#111c26]"
-                }`}
-                onClick={() => setActiveSlug(room.slug)}
-              >
-                <p className="text-lg font-semibold text-white">{room.name}</p>
-                <p className="mt-2 text-sm text-[#b9c6d3]">{room.description}</p>
-                <div className="mt-4 flex items-center justify-between text-sm">
-                  <p className="text-[#dbe6ee]">{room.members} joined</p>
-                  <p className="text-[#8fb7d5]">{room.joined ? "You joined" : "Open"}</p>
-                </div>
-              </Link>
+                <Link
+                  key={room.slug}
+                  href={`/rooms/${encodeURIComponent(room.slug)}`}
+                  className={`block w-full rounded-[18px] border p-4 text-left transition ${
+                    activeSlug === room.slug ? "border-[#8fb7d5]/40 bg-[#0d1720]" : "border-white/10 bg-[#0d1720]/70 hover:bg-[#111c26]"
+                  }`}
+                  onClick={() => setActiveSlug(room.slug)}
+                >
+                  <div className="flex items-start justify-between gap-3">
+                    <div>
+                      <p className="text-lg font-semibold text-white">{room.name}</p>
+                      <p className="mt-2 text-sm leading-6 text-[#b9c6d3]">{room.description}</p>
+                    </div>
+                    <p className="shrink-0 text-xs text-[#8fb7d5]">{room.members} joined</p>
+                  </div>
+                  <div className="mt-4 flex items-center justify-between text-sm">
+                    <p className="text-[#dbe6ee]">{room.category}</p>
+                    <p className="text-[#8fb7d5]">{room.joined ? "You joined" : "Open"}</p>
+                  </div>
+                </Link>
               ))
             ) : (
               <div className="rounded-[18px] border border-dashed border-white/10 bg-[#0d1720] p-4 text-sm text-[#b9c6d3]">
@@ -102,13 +107,13 @@ export default function RoomsPage() {
             )}
           </aside>
 
-          <section className="rounded-[20px] border border-white/10 bg-[#13202b] shadow-soft">
-            <div className="border-b border-white/10 p-5">
+          <section className="min-w-0 rounded-[22px] border border-white/10 bg-[#13202b] shadow-soft">
+            <div className="border-b border-white/10 p-4 md:p-5">
               <p className="text-xs uppercase tracking-[0.3em] text-[#8fb7d5]">Live room</p>
               <h2 className="mt-2 text-2xl font-semibold text-white">{activeRoom?.name ?? "Pick a room"}</h2>
               <p className="mt-1 text-sm text-[#b9c6d3]">{activeRoom?.description ?? "A live room will show up here."}</p>
             </div>
-            <div className="max-h-[55vh] space-y-3 overflow-y-auto p-5">
+            <div className="max-h-[58vh] space-y-3 overflow-y-auto p-4 md:p-5">
               {!activeSlug ? (
                 <div className="rounded-[18px] border border-dashed border-white/10 bg-[#0d1720] p-6 text-sm text-[#b9c6d3]">
                   Pick a room from the list to see messages.
@@ -129,20 +134,20 @@ export default function RoomsPage() {
                 </div>
               )}
             </div>
-            <div className="border-t border-white/10 p-4">
-              <div className="flex gap-3">
+            <div className="border-t border-white/10 p-3 md:p-4">
+              <div className="flex flex-col gap-3 sm:flex-row">
                 <input
                   value={composer}
                   onChange={(e) => setComposer(e.target.value)}
                   placeholder="Say something..."
                   disabled={!activeSlug}
-                  className="min-w-0 flex-1 rounded-[14px] border border-white/10 bg-[#0d1720] px-4 py-3 text-sm text-white outline-none placeholder:text-[#7f95a9]"
+                  className="min-w-0 flex-1 rounded-[14px] border border-white/10 bg-[#0d1720] px-4 py-3 text-sm text-white outline-none placeholder:text-[#7f95a9] disabled:cursor-not-allowed disabled:opacity-60"
                 />
                 <button
                   type="button"
                   disabled={pending || !activeSlug}
                   onClick={send}
-                  className="rounded-[14px] bg-[#e7f0f7] px-5 py-3 text-sm font-semibold text-[#163042]"
+                  className="rounded-[14px] bg-[#e7f0f7] px-5 py-3 text-sm font-semibold text-[#163042] sm:min-w-[110px]"
                 >
                   {pending ? "Sending..." : "Send"}
                 </button>

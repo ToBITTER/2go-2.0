@@ -130,15 +130,15 @@ export default function ChatsPage() {
 
   return (
     <AppShell title="Chats" subtitle="Private conversations that feel fast and alive.">
-      <div className="space-y-6">
+      <div className="space-y-5 md:space-y-6">
         <SectionHeading
           eyebrow="Messaging"
           title="Your conversations"
           description="Pick a conversation from the list, then read and reply in the thread."
         />
 
-        <div className="grid gap-4 lg:grid-cols-[0.38fr_0.62fr]">
-          <aside className="space-y-4 rounded-[20px] border border-white/10 bg-[#13202b] p-4 shadow-soft">
+        <div className="grid gap-4 lg:grid-cols-[0.36fr_0.64fr]">
+          <aside className="space-y-4 rounded-[22px] border border-white/10 bg-[#13202b] p-4 shadow-soft md:p-5">
             <div className="rounded-[18px] border border-white/10 bg-[#0d1720] p-3">
               <p className="text-xs uppercase tracking-[0.25em] text-[#8fb7d5]">Start a chat</p>
               <div className="mt-3 flex gap-2">
@@ -201,8 +201,8 @@ export default function ChatsPage() {
             )}
           </aside>
 
-          <section className="rounded-[20px] border border-white/10 bg-[#13202b] shadow-soft">
-            <div className="border-b border-white/10 p-5">
+          <section className="min-w-0 rounded-[22px] border border-white/10 bg-[#13202b] shadow-soft">
+            <div className="border-b border-white/10 p-4 md:p-5">
               <p className="text-xs uppercase tracking-[0.3em] text-[#8fb7d5]">Conversation</p>
               <h2 className="mt-2 text-2xl font-semibold text-white">{activeChat?.title ?? "Select a conversation"}</h2>
               <p className="mt-1 text-sm text-[#b9c6d3]">
@@ -211,7 +211,7 @@ export default function ChatsPage() {
               {typing ? <p className="mt-2 text-xs text-[#8fb7d5]">You’re typing...</p> : null}
             </div>
 
-            <div className="min-h-[360px] max-h-[55vh] space-y-3 overflow-y-auto p-5">
+            <div className="min-h-[320px] max-h-[58vh] space-y-3 overflow-y-auto p-4 md:p-5">
               {!activeChatId ? (
                 <div className="grid h-full min-h-[320px] place-items-center rounded-[18px] border border-dashed border-white/10 bg-[#0d1720] p-6 text-center">
                   <div className="max-w-sm space-y-3">
@@ -245,8 +245,8 @@ export default function ChatsPage() {
               )}
             </div>
 
-            <div className="border-t border-white/10 p-4">
-              <div className="flex gap-3">
+            <div className="border-t border-white/10 p-3 md:p-4">
+              <div className="flex flex-col gap-3 sm:flex-row">
                 <input
                   value={composer}
                   onChange={(event) => setComposer(event.target.value)}
@@ -258,7 +258,7 @@ export default function ChatsPage() {
                   type="button"
                   disabled={!activeChatId || pending}
                   onClick={onSend}
-                  className="rounded-[14px] bg-[#e7f0f7] px-5 py-3 text-sm font-semibold text-[#163042]"
+                  className="rounded-[14px] bg-[#e7f0f7] px-5 py-3 text-sm font-semibold text-[#163042] sm:min-w-[110px]"
                 >
                   {pending ? "Sending..." : "Send"}
                 </button>
