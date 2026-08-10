@@ -293,6 +293,45 @@ function toRoomMessagePayload(message: {
 }
 
 export async function listRooms() {
+  const existingCount = await prisma.room.count();
+  if (existingCount === 0) {
+    await prisma.room.createMany({
+      data: [
+        {
+          slug: "football",
+          name: "Football",
+          description: "Match talk, banter, and live reactions.",
+          category: "Sports",
+        },
+        {
+          slug: "music",
+          name: "Music",
+          description: "Songs, clips, and whatever is stuck in your head.",
+          category: "Culture",
+        },
+        {
+          slug: "tech",
+          name: "Tech",
+          description: "Quick takes and late-night ideas.",
+          category: "Ideas",
+        },
+        {
+          slug: "campus",
+          name: "Campus",
+          description: "Chill conversation for the people around you.",
+          category: "Social",
+        },
+        {
+          slug: "gaming",
+          name: "Gaming",
+          description: "Open rooms for games, streams, and random wins.",
+          category: "Fun",
+        },
+      ],
+      skipDuplicates: true,
+    });
+  }
+
   const rooms = await prisma.room.findMany({
     orderBy: { updatedAt: "desc" },
     take: 6,
