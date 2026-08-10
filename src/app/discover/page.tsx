@@ -10,12 +10,20 @@ export default function DiscoverPage() {
   const [users, setUsers] = useState<AuthUser[]>([]);
   const [rooms, setRooms] = useState<RoomSummary[]>([]);
   const [query, setQuery] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     void (async () => {
-      const [usersPayload, roomsPayload] = await Promise.all([getUsers(), getRooms()]);
-      setUsers(usersPayload.users);
-      setRooms(roomsPayload.rooms);
+      try {
+        const [usersPayload, roomsPayload] = await Promise.all([getUsers(), getRooms()]);
+        setUsers(usersPayload.users);
+        setRooms(roomsPayload.rooms);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Unable to load discover data");
+      } finally {
+        setLoading(false);
+      }
     })();
   }, []);
 
@@ -42,6 +50,11 @@ export default function DiscoverPage() {
     <AppShell title="Discover" subtitle="Find people, rooms, and conversations that feel alive.">
       <div className="space-y-6">
         <SectionHeading eyebrow="Discovery" title="Find your people" description="Search users or rooms, then jump in right away." />
+        {error ? (
+          <div className="rounded-[18px] border border-red-400/20 bg-red-500/10 px-4 py-3 text-sm text-red-100">
+            {error}
+          </div>
+        ) : null}
 
         <div className="rounded-[20px] border border-white/10 bg-[#13202b] p-5 shadow-soft">
           <input
@@ -56,7 +69,11 @@ export default function DiscoverPage() {
           <section className="rounded-[20px] border border-white/10 bg-[#13202b] p-6 shadow-soft">
             <h2 className="text-xl font-semibold text-white">People</h2>
             <div className="mt-4 grid gap-3 md:grid-cols-2">
-              {filteredUsers.length ? (
+              {loading ? (
+                <div className="rounded-[18px] border border-dashed border-white/10 bg-[#0d1720] p-6 text-sm text-[#b9c6d3]">
+                  Loading people...
+                </div>
+              ) : filteredUsers.length ? (
                 filteredUsers.map((user) => (
                   <article key={user.id} className="rounded-[18px] border border-white/10 bg-[#0d1720] p-4">
                     <div className="flex items-center gap-3">
@@ -95,7 +112,7 @@ export default function DiscoverPage() {
                 ))
               ) : (
                 <div className="rounded-[18px] border border-dashed border-white/10 bg-[#0d1720] p-6 text-sm text-[#b9c6d3]">
-                  No matching people yet. Try another name, interest, or room topic.
+                  No matching people yet.
                 </div>
               )}
             </div>
@@ -104,7 +121,11 @@ export default function DiscoverPage() {
           <section className="rounded-[20px] border border-white/10 bg-[#13202b] p-6 shadow-soft">
             <h2 className="text-xl font-semibold text-white">Rooms</h2>
             <div className="mt-4 space-y-3">
-              {filteredRooms.length ? (
+              {loading ? (
+                <div className="rounded-[18px] border border-dashed border-white/10 bg-[#0d1720] p-6 text-sm text-[#b9c6d3]">
+                  Loading rooms...
+                </div>
+              ) : filteredRooms.length ? (
                 filteredRooms.map((room) => (
                   <Link
                     key={room.slug}
@@ -122,7 +143,7 @@ export default function DiscoverPage() {
                 ))
               ) : (
                 <div className="rounded-[18px] border border-dashed border-white/10 bg-[#0d1720] p-6 text-sm text-[#b9c6d3]">
-                  No matching rooms yet. Try a different keyword.
+                  No matching rooms yet.
                 </div>
               )}
             </div>

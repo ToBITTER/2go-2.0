@@ -11,25 +11,41 @@ export default function RoomsPage() {
   const [activeSlug, setActiveSlug] = useState<string | null>(null);
   const [messages, setMessages] = useState<RoomMessage[]>([]);
   const [composer, setComposer] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
 
   useEffect(() => {
     void (async () => {
-      const payload = await getRooms();
-      setRooms(payload.rooms);
-      setActiveSlug(payload.rooms[0]?.slug ?? null);
+      try {
+        const payload = await getRooms();
+        setRooms(payload.rooms);
+        setActiveSlug(payload.rooms[0]?.slug ?? null);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Unable to load rooms");
+      } finally {
+        setLoading(false);
+      }
     })();
   }, []);
 
   useEffect(() => {
     if (!activeSlug) return;
     void (async () => {
-      const payload = await getRoom(activeSlug);
-      setMessages(payload.messages);
+      try {
+        const payload = await getRoom(activeSlug);
+        setMessages(payload.messages);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Unable to load room");
+      }
     })();
     const handle = window.setInterval(async () => {
-      const payload = await getRoom(activeSlug);
-      setMessages(payload.messages);
+      try {
+        const payload = await getRoom(activeSlug);
+        setMessages(payload.messages);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Unable to refresh room");
+      }
     }, 6000);
     return () => window.clearInterval(handle);
   }, [activeSlug]);
@@ -50,9 +66,19 @@ export default function RoomsPage() {
     <AppShell title="Rooms" subtitle="Public rooms and good noise.">
       <div className="space-y-6">
         <SectionHeading eyebrow="Communities" title="Rooms that feel alive" description="Pick a room and step into the conversation." />
+        {error ? (
+          <div className="rounded-[18px] border border-red-400/20 bg-red-500/10 px-4 py-3 text-sm text-red-100">
+            {error}
+          </div>
+        ) : null}
         <div className="grid gap-4 lg:grid-cols-[0.34fr_0.66fr]">
           <aside className="space-y-3 rounded-[20px] border border-white/10 bg-[#13202b] p-4 shadow-soft">
-            {rooms.map((room) => (
+            {loading ? (
+              <div className="rounded-[18px] border border-white/10 bg-[#0d1720] p-4 text-sm text-[#b9c6d3]">
+                Loading rooms...
+              </div>
+            ) : rooms.length ? (
+              rooms.map((room) => (
               <Link
                 key={room.slug}
                 href={`/rooms/${encodeURIComponent(room.slug)}`}
@@ -68,7 +94,12 @@ export default function RoomsPage() {
                   <p className="text-[#8fb7d5]">{room.joined ? "You joined" : "Open"}</p>
                 </div>
               </Link>
-            ))}
+              ))
+            ) : (
+              <div className="rounded-[18px] border border-dashed border-white/10 bg-[#0d1720] p-4 text-sm text-[#b9c6d3]">
+                No rooms found in the database yet.
+              </div>
+            )}
           </aside>
 
           <section className="rounded-[20px] border border-white/10 bg-[#13202b] shadow-soft">
@@ -78,7 +109,11 @@ export default function RoomsPage() {
               <p className="mt-1 text-sm text-[#b9c6d3]">{activeRoom?.description ?? "A live room will show up here."}</p>
             </div>
             <div className="max-h-[55vh] space-y-3 overflow-y-auto p-5">
-              {messages.length ? (
+              {!activeSlug ? (
+                <div className="rounded-[18px] border border-dashed border-white/10 bg-[#0d1720] p-6 text-sm text-[#b9c6d3]">
+                  Pick a room from the list to see messages.
+                </div>
+              ) : messages.length ? (
                 messages.map((message) => (
                   <article key={message.id} className="rounded-[18px] border border-white/10 bg-[#0d1720] p-4">
                     <p className="font-semibold text-white">{message.sender.displayName}</p>
@@ -100,6 +135,7 @@ export default function RoomsPage() {
                   value={composer}
                   onChange={(e) => setComposer(e.target.value)}
                   placeholder="Say something..."
+                  disabled={!activeSlug}
                   className="min-w-0 flex-1 rounded-[14px] border border-white/10 bg-[#0d1720] px-4 py-3 text-sm text-white outline-none placeholder:text-[#7f95a9]"
                 />
                 <button
