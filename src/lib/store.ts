@@ -11,6 +11,7 @@ export type UserRecord = {
   rank: string;
   interests: string[];
   picture?: string | null;
+  online?: boolean;
 };
 
 export type ConversationSummary = {
@@ -69,6 +70,7 @@ function toUserRecord(user: {
   rank: string;
   interests: unknown;
   picture: string | null;
+  online?: boolean;
 }): UserRecord {
   return {
     id: user.id,
@@ -80,6 +82,7 @@ function toUserRecord(user: {
     rank: user.rank,
     interests: Array.isArray(user.interests) ? user.interests.filter((item): item is string => typeof item === "string") : [],
     picture: user.picture,
+    online: user.online,
   };
 }
 
@@ -117,12 +120,18 @@ export async function findUserByUsername(username: string) {
 }
 
 export async function listUsers(excludeUserId?: string) {
+  const activeSessions = await prisma.session.findMany({
+    where: { expiresAt: { gt: new Date() } },
+    select: { userId: true },
+  });
+  const onlineIds = new Set(activeSessions.map((session) => session.userId));
+
   const users = await prisma.user.findMany({
     where: excludeUserId ? { id: { not: excludeUserId } } : undefined,
     orderBy: { updatedAt: "desc" },
     take: 24,
   });
-  return users.map(toUserRecord);
+  return users.map((user) => toUserRecord({ ...user, online: onlineIds.has(user.id) }));
 }
 
 export async function updateUser(userId: string, patch: Partial<Pick<UserRecord, "displayName" | "bio" | "picture" | "interests">>) {
@@ -160,7 +169,7 @@ export async function getUserFromSession(token: string | undefined) {
     if (session) await prisma.session.delete({ where: { token } }).catch(() => undefined);
     return undefined;
   }
-  return toUserRecord(session.user);
+  return toUserRecord({ ...session.user, online: true });
 }
 
 function toConversationSummary(userId: string, conversation: {

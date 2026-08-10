@@ -62,6 +62,7 @@ export type AuthUser = {
   rank: string;
   interests: string[];
   picture?: string;
+  online?: boolean;
 };
 
 export type AuthSession = {

@@ -85,6 +85,12 @@ export default function DiscoverPage() {
                         <p className="text-sm text-[#8fb7d5]">@{user.username}</p>
                       </div>
                     </div>
+                    <div className="mt-3">
+                      <span className={`inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs ${user.online ? "bg-emerald-400/10 text-emerald-300" : "bg-white/5 text-[#b9c6d3]"}`}>
+                        <span className={`h-2 w-2 rounded-full ${user.online ? "bg-emerald-300" : "bg-[#7f95a9]"}`} />
+                        {user.online ? "Online now" : "Offline"}
+                      </span>
+                    </div>
                     <p className="mt-3 text-sm leading-6 text-[#b9c6d3]">{user.bio}</p>
                     <div className="mt-4 flex flex-wrap gap-2">
                       <span className="rounded-full border border-white/10 bg-[#13202b] px-3 py-1 text-xs text-[#dbe6ee]">{user.rank}</span>
