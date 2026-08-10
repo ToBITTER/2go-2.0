@@ -1,11 +1,13 @@
 "use client";
 
 import { useEffect, useMemo, useState, useTransition } from "react";
+import { useSearchParams } from "next/navigation";
 import { AppShell } from "@/components/layout/app-shell";
 import { SectionHeading } from "@/components/section-heading";
-import { getChats, getConversation, sendMessage, type ChatMessage, type ChatSummary } from "@/lib/api";
+import { getChats, getConversation, sendMessage, startChatWithUser, type ChatMessage, type ChatSummary } from "@/lib/api";
 
 export default function ChatsPage() {
+  const searchParams = useSearchParams();
   const [chats, setChats] = useState<ChatSummary[]>([]);
   const [activeChatId, setActiveChatId] = useState<string | null>(null);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
@@ -36,8 +38,18 @@ export default function ChatsPage() {
   }
 
   useEffect(() => {
-    void loadChats();
-  }, []);
+    void (async () => {
+      await loadChats();
+      const username = searchParams.get("with");
+      if (!username) return;
+      try {
+        const payload = await startChatWithUser(username);
+        setActiveChatId(payload.conversationId);
+      } catch {
+        return;
+      }
+    })();
+  }, [searchParams]);
 
   useEffect(() => {
     if (!activeChatId) return;
@@ -115,9 +127,13 @@ export default function ChatsPage() {
                     <div className="flex items-center justify-between gap-3">
                       <div>
                         <p className="font-semibold text-white">{message.sender.displayName}</p>
-                        <p className="text-xs text-[#8fb7d5]">@{message.sender.username} · {message.sender.rank}</p>
+                        <p className="text-xs text-[#8fb7d5]">
+                          @{message.sender.username} · {message.sender.rank}
+                        </p>
                       </div>
-                      <p className="text-xs text-[#b9c6d3]">{new Date(message.createdAt).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })}</p>
+                      <p className="text-xs text-[#b9c6d3]">
+                        {new Date(message.createdAt).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })}
+                      </p>
                     </div>
                     <p className="mt-3 text-sm leading-6 text-[#dbe6ee]">{message.body}</p>
                   </article>

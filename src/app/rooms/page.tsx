@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useMemo, useState, useTransition } from "react";
-import Link from "next/link";
 import { AppShell } from "@/components/layout/app-shell";
 import { SectionHeading } from "@/components/section-heading";
 import { getRooms, getRoom, sendRoomMessage, type RoomMessage, type RoomSummary } from "@/lib/api";
@@ -78,13 +77,17 @@ export default function RoomsPage() {
               <p className="mt-1 text-sm text-[#b9c6d3]">{activeRoom?.description ?? "A live room will show up here."}</p>
             </div>
             <div className="max-h-[55vh] space-y-3 overflow-y-auto p-5">
-              {messages.length ? messages.map((message) => (
-                <article key={message.id} className="rounded-[18px] border border-white/10 bg-[#0d1720] p-4">
-                  <p className="font-semibold text-white">{message.sender.displayName}</p>
-                  <p className="text-xs text-[#8fb7d5]">@{message.sender.username} · {message.sender.rank}</p>
-                  <p className="mt-3 text-sm leading-6 text-[#dbe6ee]">{message.body}</p>
-                </article>
-              )) : (
+              {messages.length ? (
+                messages.map((message) => (
+                  <article key={message.id} className="rounded-[18px] border border-white/10 bg-[#0d1720] p-4">
+                    <p className="font-semibold text-white">{message.sender.displayName}</p>
+                    <p className="text-xs text-[#8fb7d5]">
+                      @{message.sender.username} · {message.sender.rank}
+                    </p>
+                    <p className="mt-3 text-sm leading-6 text-[#dbe6ee]">{message.body}</p>
+                  </article>
+                ))
+              ) : (
                 <div className="rounded-[18px] border border-dashed border-white/10 bg-[#0d1720] p-6 text-sm text-[#b9c6d3]">
                   This room is quiet right now. Start the first line.
                 </div>
@@ -92,8 +95,18 @@ export default function RoomsPage() {
             </div>
             <div className="border-t border-white/10 p-4">
               <div className="flex gap-3">
-                <input value={composer} onChange={(e) => setComposer(e.target.value)} placeholder="Say something..." className="min-w-0 flex-1 rounded-[14px] border border-white/10 bg-[#0d1720] px-4 py-3 text-sm text-white outline-none placeholder:text-[#7f95a9]" />
-                <button type="button" disabled={pending || !activeSlug} onClick={send} className="rounded-[14px] bg-[#e7f0f7] px-5 py-3 text-sm font-semibold text-[#163042]">
+                <input
+                  value={composer}
+                  onChange={(e) => setComposer(e.target.value)}
+                  placeholder="Say something..."
+                  className="min-w-0 flex-1 rounded-[14px] border border-white/10 bg-[#0d1720] px-4 py-3 text-sm text-white outline-none placeholder:text-[#7f95a9]"
+                />
+                <button
+                  type="button"
+                  disabled={pending || !activeSlug}
+                  onClick={send}
+                  className="rounded-[14px] bg-[#e7f0f7] px-5 py-3 text-sm font-semibold text-[#163042]"
+                >
                   {pending ? "Sending..." : "Send"}
                 </button>
               </div>
