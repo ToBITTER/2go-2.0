@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { mainNavigation, utilityNavigation, type NavigationItem } from "@/data/navigation";
 import { ChevronRight, LogOut, Star, UserCircle2 } from "lucide-react";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { getMe, logoutUser, type AuthUser } from "@/lib/api";
 
 type AppShellProps = {
@@ -24,6 +24,7 @@ export function AppShell({
   actionHref = "/auth/sign-in",
 }: AppShellProps) {
   const pathname = usePathname();
+  const router = useRouter();
   const [user, setUser] = useState<AuthUser | null>(null);
   const [authReady, setAuthReady] = useState(false);
   const utilityItems: NavigationItem[] = utilityNavigation;
@@ -40,6 +41,20 @@ export function AppShell({
       }
     })();
   }, []);
+
+  useEffect(() => {
+    if (!authReady) return;
+    if (user) return;
+    router.replace("/auth/sign-in");
+  }, [authReady, router, user]);
+
+  if (!authReady || !user) {
+    return (
+      <main className="grid min-h-screen place-items-center bg-app px-4 text-[#dbe6ee]">
+        <p className="text-sm uppercase tracking-[0.35em] text-[#8fb7d5]">Loading...</p>
+      </main>
+    );
+  }
 
   function handleLogout() {
     void (async () => {
