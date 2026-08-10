@@ -73,6 +73,7 @@ export type ChatSummary = {
   title: string;
   subtitle: string;
   unread: number;
+  messageCount: number;
   lastMessage: string;
   lastMessageAt: string;
   members: Array<Pick<AuthUser, "id" | "username" | "displayName" | "rank" | "picture">>;

@@ -18,6 +18,7 @@ export type ConversationSummary = {
   title: string;
   subtitle: string;
   unread: number;
+  messageCount: number;
   lastMessage: string;
   lastMessageAt: string;
   members: Array<Pick<UserRecord, "id" | "username" | "displayName" | "rank" | "picture">>;
@@ -200,6 +201,7 @@ function toConversationSummary(userId: string, conversation: {
     title: other ? other.displayName : "Conversation",
     subtitle: other ? `@${other.username}` : "Private chat",
     unread: 0,
+    messageCount: conversation.messages.length,
     lastMessage: lastMessage?.body ?? "Say hello",
     lastMessageAt: conversation.updatedAt.toISOString(),
     members,

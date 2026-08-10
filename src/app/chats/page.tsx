@@ -15,7 +15,9 @@ export default function ChatsPage() {
   const [error, setError] = useState<string | null>(null);
   const [usernameQuery, setUsernameQuery] = useState("");
   const [composer, setComposer] = useState("");
+  const [typing, setTyping] = useState(false);
   const [pending, startTransition] = useTransition();
+  const [seenCounts, setSeenCounts] = useState<Record<string, number>>({});
 
   async function loadChats() {
     try {
@@ -29,6 +31,20 @@ export default function ChatsPage() {
     }
   }
 
+  function readSeenCounts() {
+    try {
+      const raw = window.localStorage.getItem("2go_chat_seen_counts");
+      return raw ? (JSON.parse(raw) as Record<string, number>) : {};
+    } catch {
+      return {};
+    }
+  }
+
+  function writeSeenCounts(next: Record<string, number>) {
+    setSeenCounts(next);
+    window.localStorage.setItem("2go_chat_seen_counts", JSON.stringify(next));
+  }
+
   async function loadConversation(chatId: string) {
     try {
       const payload = await getConversation(chatId);
@@ -39,6 +55,7 @@ export default function ChatsPage() {
   }
 
   useEffect(() => {
+    setSeenCounts(readSeenCounts());
     void (async () => {
       await loadChats();
       const username = searchParams.get("with");
@@ -59,7 +76,25 @@ export default function ChatsPage() {
     return () => window.clearInterval(handle);
   }, [activeChatId]);
 
+  useEffect(() => {
+    if (!activeChatId) return;
+    writeSeenCounts({ ...readSeenCounts(), [activeChatId]: messages.length });
+  }, [activeChatId, messages]);
+
+  useEffect(() => {
+    if (!activeChatId) return;
+    const trimmed = composer.trim();
+    if (!trimmed) {
+      setTyping(false);
+      return;
+    }
+    setTyping(true);
+    const handle = window.setTimeout(() => setTyping(false), 900);
+    return () => window.clearTimeout(handle);
+  }, [composer, activeChatId]);
+
   const activeChat = useMemo(() => chats.find((chat) => chat.id === activeChatId) ?? null, [activeChatId, chats]);
+  const unreadCountFor = (chat: ChatSummary) => Math.max(chat.messageCount - (seenCounts[chat.id] ?? 0), 0);
 
   async function onSend() {
     if (!activeChatId || !composer.trim()) return;
@@ -69,6 +104,7 @@ export default function ChatsPage() {
       try {
         const payload = await sendMessage(activeChatId, body);
         setMessages((current) => [...current, payload.message]);
+        writeSeenCounts({ ...readSeenCounts(), [activeChatId]: messages.length + 1 });
       } catch (err) {
         setError(err instanceof Error ? err.message : "Unable to send message");
       }
@@ -85,6 +121,7 @@ export default function ChatsPage() {
         const payload = await startChatWithUser(username);
         await loadChats();
         setActiveChatId(payload.conversationId);
+        writeSeenCounts({ ...readSeenCounts(), [payload.conversationId]: 0 });
       } catch (err) {
         setError(err instanceof Error ? err.message : "Unable to start chat");
       }
@@ -148,7 +185,9 @@ export default function ChatsPage() {
                           <p className="font-semibold text-white">{chat.title}</p>
                           <p className="mt-1 line-clamp-1 text-sm text-[#b9c6d3]">{chat.lastMessage}</p>
                         </div>
-                        <span className="shrink-0 text-xs text-[#8fb7d5]">{chat.unread ? `${chat.unread} new` : "Seen"}</span>
+                        <span className="shrink-0 text-xs text-[#8fb7d5]">
+                          {unreadCountFor(chat) ? `${unreadCountFor(chat)} new` : "Seen"}
+                        </span>
                       </div>
                       <p className="mt-3 text-xs uppercase tracking-[0.28em] text-[#b9c6d3]">{chat.subtitle}</p>
                     </button>
@@ -169,6 +208,7 @@ export default function ChatsPage() {
               <p className="mt-1 text-sm text-[#b9c6d3]">
                 {activeChat?.subtitle ?? "Choose a chat from the list to see the thread."}
               </p>
+              {typing ? <p className="mt-2 text-xs text-[#8fb7d5]">You’re typing...</p> : null}
             </div>
 
             <div className="min-h-[360px] max-h-[55vh] space-y-3 overflow-y-auto p-5">
@@ -177,7 +217,7 @@ export default function ChatsPage() {
                   <div className="max-w-sm space-y-3">
                     <p className="text-lg font-semibold text-white">Pick a conversation</p>
                     <p className="text-sm leading-6 text-[#b9c6d3]">
-                      Select any chat from the left, then your messages and composer will appear here.
+                  Select any chat from the left, then your messages and composer will appear here.
                     </p>
                   </div>
                 </div>
