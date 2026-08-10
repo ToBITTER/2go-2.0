@@ -344,6 +344,7 @@ export async function listRooms(userId?: string) {
     name: room.name,
     description: room.description,
     category: room.category,
+    online: room.memberships.length,
     members: room.memberships.length,
     joined: userId ? room.memberships.some((membership) => membership.userId === userId) : false,
     lastMessage: room.messages[0]?.body ?? "Say something to start the room.",

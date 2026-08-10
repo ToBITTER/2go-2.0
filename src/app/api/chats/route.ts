@@ -27,6 +27,9 @@ export async function POST(request: NextRequest) {
 
   const target = await findUserByUsername(parsed.data.username);
   if (!target) return NextResponse.json({ error: "User not found" }, { status: 404 });
+  if (target.id === user.id) {
+    return NextResponse.json({ error: "Pick another username" }, { status: 400 });
+  }
 
   const conversation = await getOrCreateDirectConversation(user.id, target.id);
   return NextResponse.json({ conversationId: conversation.id });
