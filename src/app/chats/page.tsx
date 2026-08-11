@@ -5,6 +5,7 @@ import { useSearchParams } from "next/navigation";
 import { AppShell } from "@/components/layout/app-shell";
 import { SectionHeading } from "@/components/section-heading";
 import { getChats, getConversation, getMe, sendMessage, startChatWithUser, type ChatMessage, type ChatSummary, type AuthUser } from "@/lib/api";
+import { ChevronLeft } from "lucide-react";
 
 export default function ChatsPage() {
   const searchParams = useSearchParams();
@@ -192,18 +193,29 @@ export default function ChatsPage() {
                         active ? "border-[#8fb7d5]/40 bg-[#0d1720]" : "border-white/10 bg-[#0d1720]/70 hover:bg-[#111c26]"
                       }`}
                     >
-                      <div className="flex items-start justify-between gap-3">
-                        <div className="min-w-0">
-                          <p className="font-semibold text-white">{chat.title}</p>
-                          <p className="mt-1 line-clamp-1 text-sm text-[#b9c6d3]">{chat.lastMessage}</p>
+                      <div className="flex items-start gap-3">
+                        <div className="grid h-11 w-11 shrink-0 place-items-center rounded-[14px] bg-[#e7f0f7] text-sm font-semibold text-[#163042]">
+                          {chat.title?.[0] ?? "D"}
                         </div>
-                        <span className={`shrink-0 rounded-full px-2 py-1 text-[11px] ${unread ? "bg-[#2f7fb8]/15 text-[#9fd2ff]" : "bg-white/5 text-[#b9c6d3]"}`}>
-                          {unread ? `${unread} new` : "Seen"}
-                        </span>
-                      </div>
-                      <div className="mt-3 flex items-center justify-between gap-2 text-xs text-[#b9c6d3]">
-                        <span>{chat.subtitle}</span>
-                        <span>{chat.messageCount} msgs</span>
+                        <div className="min-w-0 flex-1">
+                          <div className="flex items-start justify-between gap-3">
+                            <div className="min-w-0">
+                              <p className="font-semibold text-white">{chat.title}</p>
+                              <p className="mt-1 line-clamp-1 text-sm text-[#b9c6d3]">{chat.lastMessage}</p>
+                            </div>
+                            <span
+                              className={`shrink-0 rounded-full px-2 py-1 text-[11px] ${
+                                unread ? "bg-[#2f7fb8]/15 text-[#9fd2ff]" : "bg-white/5 text-[#b9c6d3]"
+                              }`}
+                            >
+                              {unread ? `${unread} new` : "Seen"}
+                            </span>
+                          </div>
+                          <div className="mt-3 flex items-center justify-between gap-2 text-xs text-[#b9c6d3]">
+                            <span className="max-w-[70%] truncate">{chat.subtitle}</span>
+                            <span>{chat.messageCount} msgs</span>
+                          </div>
+                        </div>
                       </div>
                     </button>
                   );
@@ -219,6 +231,14 @@ export default function ChatsPage() {
           <section className="min-w-0 overflow-hidden rounded-[24px] border border-white/10 bg-[#13202b] shadow-soft">
             <div className="sticky top-0 z-10 border-b border-white/10 bg-[#13202b]/95 px-4 py-4 backdrop-blur md:px-5">
               <div className="flex items-center gap-3">
+                <button
+                  type="button"
+                  onClick={() => setActiveChatId(null)}
+                  className="grid h-10 w-10 shrink-0 place-items-center rounded-[14px] border border-white/10 bg-white/5 text-[#dbe6ee] sm:hidden"
+                  aria-label="Back to inbox"
+                >
+                  <ChevronLeft className="h-4 w-4" />
+                </button>
                 <div className="grid h-11 w-11 place-items-center rounded-[14px] bg-[#e7f0f7] text-[#163042]">
                   {activeChat?.title?.[0] ?? "D"}
                 </div>

@@ -116,7 +116,7 @@ export default function RoomsPage() {
             )}
           </aside>
 
-          <section className="min-w-0 rounded-[22px] border border-white/10 bg-[#13202b] shadow-soft">
+          <section className="min-w-0 overflow-hidden rounded-[22px] border border-white/10 bg-[#13202b] shadow-soft">
             <div className="border-b border-white/10 p-4 md:p-5">
               <div className="flex items-center justify-between gap-3">
                 <div className="min-w-0">
@@ -130,10 +130,24 @@ export default function RoomsPage() {
                   </div>
                 ) : null}
               </div>
+              {activeRoom ? (
+                <div className="mt-4 flex flex-wrap gap-2">
+                  <span className="inline-flex items-center gap-2 rounded-full border border-emerald-400/20 bg-emerald-400/10 px-3 py-2 text-xs font-semibold text-emerald-200">
+                    <span className="h-2 w-2 rounded-full bg-emerald-300" />
+                    {activeRoom.online} online now
+                  </span>
+                  <span className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-2 text-xs font-semibold text-[#dbe6ee]">
+                    {activeRoom.members} here in total
+                  </span>
+                  <span className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-2 text-xs font-semibold text-[#dbe6ee]">
+                    {activeRoom.joined ? "You are in this room" : "Open room"}
+                  </span>
+                </div>
+              ) : null}
               {typing ? <p className="mt-2 text-xs text-[#8fb7d5]">You&apos;re typing...</p> : null}
             </div>
 
-            <div className="max-h-[58vh] space-y-3 overflow-y-auto p-4 md:p-5">
+            <div className="max-h-[58vh] space-y-3 overflow-y-auto overscroll-contain p-4 md:p-5">
               {!activeSlug ? (
                 <div className="rounded-[18px] border border-dashed border-white/10 bg-[#0d1720] p-6 text-sm text-[#b9c6d3]">
                   Pick a room from the list to see messages.
@@ -155,8 +169,8 @@ export default function RoomsPage() {
               )}
             </div>
 
-            <div className="border-t border-white/10 p-3 md:p-4">
-              <div className="flex flex-col gap-3 sm:flex-row">
+            <div className="sticky bottom-0 border-t border-white/10 bg-[#13202b] p-3 md:p-4">
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-end">
                 <input
                   value={composer}
                   onChange={(e) => setComposer(e.target.value)}
