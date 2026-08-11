@@ -46,6 +46,11 @@ export default function DiscoverPage() {
     );
   }, [query, rooms]);
 
+  const onlineCount = filteredUsers.filter((user) => user.online).length;
+  const topRanks = [...filteredUsers]
+    .sort((a, b) => a.rank.localeCompare(b.rank) || a.displayName.localeCompare(b.displayName))
+    .slice(0, 4);
+
   return (
     <AppShell title="Discover" subtitle="Find people, rooms, and conversations that feel alive.">
       <div className="space-y-6">
@@ -57,12 +62,22 @@ export default function DiscoverPage() {
         ) : null}
 
         <div className="rounded-[20px] border border-white/10 bg-[#13202b] p-5 shadow-soft">
-          <input
-            value={query}
-            onChange={(event) => setQuery(event.target.value)}
-            placeholder="Search people or rooms..."
-            className="w-full rounded-[14px] border border-white/10 bg-[#0d1720] px-4 py-3 text-sm text-white outline-none placeholder:text-[#7f95a9]"
-          />
+          <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+            <input
+              value={query}
+              onChange={(event) => setQuery(event.target.value)}
+              placeholder="Search people or rooms..."
+              className="w-full rounded-[14px] border border-white/10 bg-[#0d1720] px-4 py-3 text-sm text-white outline-none placeholder:text-[#7f95a9]"
+            />
+            <div className="flex gap-2">
+              <span className="rounded-full border border-white/10 bg-[#0d1720] px-3 py-2 text-xs text-[#dbe6ee]">
+                {onlineCount} online
+              </span>
+              <span className="rounded-full border border-white/10 bg-[#0d1720] px-3 py-2 text-xs text-[#dbe6ee]">
+                {filteredUsers.length} people
+              </span>
+            </div>
+          </div>
         </div>
 
         <div className="grid gap-4 lg:grid-cols-[0.6fr_0.4fr]">
@@ -128,9 +143,36 @@ export default function DiscoverPage() {
             </div>
           </section>
 
-          <section className="rounded-[20px] border border-white/10 bg-[#13202b] p-6 shadow-soft">
-            <h2 className="text-xl font-semibold text-white">Rooms</h2>
-            <div className="mt-4 space-y-3">
+          <section className="space-y-4">
+            <div className="rounded-[20px] border border-white/10 bg-[#13202b] p-6 shadow-soft">
+              <h2 className="text-xl font-semibold text-white">Rank lane</h2>
+              <p className="mt-2 text-sm leading-6 text-[#b9c6d3]">
+                A quick look at people with strong presence right now.
+              </p>
+              <div className="mt-4 space-y-3">
+                {topRanks.length ? (
+                  topRanks.map((user) => (
+                    <div key={user.id} className="flex items-center justify-between gap-3 rounded-[16px] border border-white/10 bg-[#0d1720] px-4 py-3">
+                      <div className="min-w-0">
+                        <p className="font-semibold text-white">{user.displayName}</p>
+                        <p className="truncate text-sm text-[#8fb7d5]">@{user.username}</p>
+                      </div>
+                      <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs text-[#dbe6ee]">
+                        {user.rank}
+                      </span>
+                    </div>
+                  ))
+                ) : (
+                  <div className="rounded-[18px] border border-dashed border-white/10 bg-[#0d1720] p-6 text-sm text-[#b9c6d3]">
+                    No ranked users found yet.
+                  </div>
+                )}
+              </div>
+            </div>
+
+            <div className="rounded-[20px] border border-white/10 bg-[#13202b] p-6 shadow-soft">
+              <h2 className="text-xl font-semibold text-white">Rooms</h2>
+              <div className="mt-4 space-y-3">
               {loading ? (
                 <div className="rounded-[18px] border border-dashed border-white/10 bg-[#0d1720] p-6 text-sm text-[#b9c6d3]">
                   Loading rooms...
@@ -156,6 +198,7 @@ export default function DiscoverPage() {
                   No matching rooms yet.
                 </div>
               )}
+              </div>
             </div>
           </section>
         </div>

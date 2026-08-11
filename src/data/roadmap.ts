@@ -52,7 +52,7 @@ export const roadmapPhases: RoadmapPhase[] = [
     ],
   },
   {
-    status: "upcoming",
+    status: "in-progress",
     title: "Discovery + Rank",
     summary: "Power social growth with discovery, XP, and progression.",
     items: [

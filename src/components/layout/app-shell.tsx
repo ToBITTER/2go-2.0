@@ -68,7 +68,7 @@ export function AppShell({
   }
 
   return (
-    <main className="min-h-screen bg-app text-paper">
+    <main className="min-h-screen overflow-x-hidden bg-app text-paper">
       <div className="mx-auto flex w-full max-w-7xl gap-6 px-3 py-3 sm:px-4 md:px-6 lg:px-8">
         <aside className="sticky top-4 hidden h-[calc(100vh-2rem)] w-80 flex-col justify-between overflow-hidden rounded-[22px] border border-white/10 bg-[#13202b] p-4 shadow-soft lg:flex">
           <div>

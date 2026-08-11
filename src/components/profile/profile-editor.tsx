@@ -127,7 +127,7 @@ export function ProfileEditor() {
           <div className="space-y-3 rounded-[14px] border border-white/10 bg-[#0f161d] p-4">
             <div className="space-y-1">
               <p className="text-sm font-medium text-white">Profile picture</p>
-              <p className="text-sm text-[#b9c6d3]">Upload a photo or leave it blank.</p>
+              <p className="text-sm text-[#b9c6d3]">Upload a photo from your device or leave it blank.</p>
             </div>
             <input
               ref={pictureInputRef}

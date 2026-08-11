@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState, useTransition } from "react";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { AppShell } from "@/components/layout/app-shell";
 import { SectionHeading } from "@/components/section-heading";
 import { getChats, getConversation, getMe, sendMessage, startChatWithUser, type ChatMessage, type ChatSummary, type AuthUser } from "@/lib/api";
@@ -9,6 +9,7 @@ import { ChevronLeft } from "lucide-react";
 
 export default function ChatsPage() {
   const searchParams = useSearchParams();
+  const router = useRouter();
   const [me, setMe] = useState<AuthUser | null>(null);
   const [chats, setChats] = useState<ChatSummary[]>([]);
   const [activeChatId, setActiveChatId] = useState<string | null>(null);
@@ -20,6 +21,7 @@ export default function ChatsPage() {
   const [typing, setTyping] = useState(false);
   const [pending, startTransition] = useTransition();
   const [seenCounts, setSeenCounts] = useState<Record<string, number>>({});
+  const [isMobile, setIsMobile] = useState(false);
 
   async function loadChats() {
     try {
@@ -65,6 +67,13 @@ export default function ChatsPage() {
         setMe(null);
       }
     })();
+  }, []);
+
+  useEffect(() => {
+    const updateMobile = () => setIsMobile(window.innerWidth < 768);
+    updateMobile();
+    window.addEventListener("resize", updateMobile);
+    return () => window.removeEventListener("resize", updateMobile);
   }, []);
 
   useEffect(() => {
@@ -184,24 +193,39 @@ export default function ChatsPage() {
                 {chats.map((chat) => {
                   const active = activeChatId === chat.id;
                   const unread = unreadCountFor(chat);
+                  const avatar = chat.title?.[0] ?? "D";
+                  const isDirect = chat.members.length === 2;
+                  const counterpart = chat.members.find((member) => member.id !== me?.id) ?? chat.members[0];
+                  const counterpartOnline = Boolean(counterpart?.id && chat.subtitle.toLowerCase().includes("online"));
                   return (
                     <button
                       key={chat.id}
                       type="button"
-                      onClick={() => setActiveChatId(chat.id)}
+                      onClick={() => {
+                        if (isMobile) {
+                          router.push(`/chats/${encodeURIComponent(chat.id)}`);
+                          return;
+                        }
+                        setActiveChatId(chat.id);
+                      }}
                       className={`w-full rounded-[18px] border p-4 text-left transition ${
                         active ? "border-[#8fb7d5]/40 bg-[#0d1720]" : "border-white/10 bg-[#0d1720]/70 hover:bg-[#111c26]"
                       }`}
                     >
                       <div className="flex items-start gap-3">
-                        <div className="grid h-11 w-11 shrink-0 place-items-center rounded-[14px] bg-[#e7f0f7] text-sm font-semibold text-[#163042]">
-                          {chat.title?.[0] ?? "D"}
+                        <div className="relative grid h-11 w-11 shrink-0 place-items-center rounded-[14px] bg-[#e7f0f7] text-sm font-semibold text-[#163042]">
+                          {avatar}
+                          <span
+                            className={`absolute -bottom-0.5 -right-0.5 h-3 w-3 rounded-full ring-2 ring-[#0d1720] ${
+                              counterpartOnline ? "bg-emerald-300" : "bg-[#7f95a9]"
+                            }`}
+                          />
                         </div>
                         <div className="min-w-0 flex-1">
                           <div className="flex items-start justify-between gap-3">
                             <div className="min-w-0">
                               <p className="font-semibold text-white">{chat.title}</p>
-                              <p className="mt-1 line-clamp-1 text-sm text-[#b9c6d3]">{chat.lastMessage}</p>
+                              <p className="mt-1 line-clamp-1 text-sm text-[#dbe6ee]">{chat.lastMessage}</p>
                             </div>
                             <span
                               className={`shrink-0 rounded-full px-2 py-1 text-[11px] ${
@@ -212,9 +236,14 @@ export default function ChatsPage() {
                             </span>
                           </div>
                           <div className="mt-3 flex items-center justify-between gap-2 text-xs text-[#b9c6d3]">
-                            <span className="max-w-[70%] truncate">{chat.subtitle}</span>
-                            <span>{chat.messageCount} msgs</span>
+                            <span className="max-w-[72%] truncate">{chat.subtitle}</span>
+                            <span className="shrink-0">{chat.messageCount} msgs</span>
                           </div>
+                          {isDirect ? (
+                            <p className="mt-2 text-[11px] uppercase tracking-[0.22em] text-[#8fb7d5]">
+                              Direct message
+                            </p>
+                          ) : null}
                         </div>
                       </div>
                     </button>
@@ -228,7 +257,7 @@ export default function ChatsPage() {
             )}
           </aside>
 
-          <section className="min-w-0 overflow-hidden rounded-[24px] border border-white/10 bg-[#13202b] shadow-soft">
+          <section className="min-w-0 hidden overflow-hidden rounded-[24px] border border-white/10 bg-[#13202b] shadow-soft md:block">
             <div className="sticky top-0 z-10 border-b border-white/10 bg-[#13202b]/95 px-4 py-4 backdrop-blur md:px-5">
               <div className="flex items-center gap-3">
                 <button
