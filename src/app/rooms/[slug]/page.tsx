@@ -63,14 +63,20 @@ export default function RoomDetailPage() {
   return (
     <AppShell title={room?.name ?? "Room"} subtitle={room?.description ?? "Live room"}>
       <div className="space-y-6">
-        <section className="rounded-[20px] border border-white/10 bg-[#13202b] p-6 shadow-soft">
+        <section className="rounded-[24px] border border-white/10 bg-[#13202b] p-6 shadow-soft">
           <p className="text-xs uppercase tracking-[0.3em] text-[#8fb7d5]">{room?.category ?? "Room"}</p>
           <h1 className="mt-2 text-3xl font-semibold text-white">{room?.name ?? "Loading room..."}</h1>
-          <p className="mt-3 text-sm text-[#b9c6d3]">{room?.description ?? "This room is waking up."}</p>
-          <div className="mt-5 flex flex-wrap items-center gap-3 text-sm text-[#dbe6ee]">
-            <span>{room?.members ?? 0} joined</span>
-            <span>{messages.length} messages</span>
-            <span>{room?.joined ? "You joined" : "Join to talk"}</span>
+          <p className="mt-3 max-w-2xl text-sm leading-6 text-[#b9c6d3]">{room?.description ?? "This room is waking up."}</p>
+          <div className="mt-5 flex flex-wrap gap-2">
+            <span className="rounded-full border border-white/10 bg-[#0d1720] px-3 py-2 text-xs text-[#dbe6ee]">
+              {room?.members ?? 0} joined
+            </span>
+            <span className="rounded-full border border-white/10 bg-[#0d1720] px-3 py-2 text-xs text-[#dbe6ee]">
+              {messages.length} messages
+            </span>
+            <span className="rounded-full border border-emerald-400/20 bg-emerald-400/10 px-3 py-2 text-xs text-emerald-200">
+              {room?.joined ? "You joined" : "Join to talk"}
+            </span>
           </div>
           {!room?.joined ? (
             <button
@@ -83,7 +89,7 @@ export default function RoomDetailPage() {
           ) : null}
         </section>
 
-        <section className="rounded-[20px] border border-white/10 bg-[#13202b] shadow-soft">
+        <section className="rounded-[24px] border border-white/10 bg-[#13202b] shadow-soft">
           <div className="max-h-[55vh] space-y-3 overflow-y-auto p-5">
             {messages.length ? (
               messages.map((message) => (
@@ -101,7 +107,7 @@ export default function RoomDetailPage() {
               </div>
             )}
           </div>
-          <div className="border-t border-white/10 p-4">
+          <div className="border-t border-white/10 bg-[#13202b] p-4">
             <div className="flex gap-3">
               <input
                 value={composer}

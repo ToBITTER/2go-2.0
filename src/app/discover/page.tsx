@@ -173,31 +173,31 @@ export default function DiscoverPage() {
             <div className="rounded-[20px] border border-white/10 bg-[#13202b] p-6 shadow-soft">
               <h2 className="text-xl font-semibold text-white">Rooms</h2>
               <div className="mt-4 space-y-3">
-              {loading ? (
-                <div className="rounded-[18px] border border-dashed border-white/10 bg-[#0d1720] p-6 text-sm text-[#b9c6d3]">
-                  Loading rooms...
-                </div>
-              ) : filteredRooms.length ? (
-                filteredRooms.map((room) => (
-                  <Link
-                    key={room.slug}
-                    href={`/rooms/${encodeURIComponent(room.slug)}`}
-                    className="block rounded-[18px] border border-white/10 bg-[#0d1720] px-4 py-3 transition hover:border-[#8fb7d5]/40 hover:bg-[#111c26]"
-                  >
-                    <div className="flex items-center justify-between gap-3">
-                      <div>
-                        <p className="font-semibold text-white">{room.name}</p>
-                        <p className="text-sm text-[#b9c6d3]">{room.description}</p>
+                {loading ? (
+                  <div className="rounded-[18px] border border-dashed border-white/10 bg-[#0d1720] p-6 text-sm text-[#b9c6d3]">
+                    Loading rooms...
+                  </div>
+                ) : filteredRooms.length ? (
+                  filteredRooms.map((room) => (
+                    <Link
+                      key={room.slug}
+                      href={`/rooms/${encodeURIComponent(room.slug)}`}
+                      className="block rounded-[18px] border border-white/10 bg-[#0d1720] px-4 py-3 transition hover:border-[#8fb7d5]/40 hover:bg-[#111c26]"
+                    >
+                      <div className="flex items-center justify-between gap-3">
+                        <div>
+                          <p className="font-semibold text-white">{room.name}</p>
+                          <p className="text-sm text-[#b9c6d3]">{room.description}</p>
+                        </div>
+                        <p className="text-xs text-[#8fb7d5]">{room.online} online</p>
                       </div>
-                      <p className="text-xs text-[#8fb7d5]">{room.online} online</p>
-                    </div>
-                  </Link>
-                ))
-              ) : (
-                <div className="rounded-[18px] border border-dashed border-white/10 bg-[#0d1720] p-6 text-sm text-[#b9c6d3]">
-                  No matching rooms yet.
-                </div>
-              )}
+                    </Link>
+                  ))
+                ) : (
+                  <div className="rounded-[18px] border border-dashed border-white/10 bg-[#0d1720] p-6 text-sm text-[#b9c6d3]">
+                    No matching rooms yet.
+                  </div>
+                )}
               </div>
             </div>
           </section>
