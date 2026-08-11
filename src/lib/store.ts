@@ -473,3 +473,77 @@ export async function listStatusUpdates() {
     },
   })) satisfies StatusUpdate[];
 }
+
+export async function getSystemStats() {
+  const [users, sessions, conversations, rooms, messages, roomMessages, statuses] = await Promise.all([
+    prisma.user.count(),
+    prisma.session.count({ where: { expiresAt: { gt: new Date() } } }),
+    prisma.conversation.count(),
+    prisma.room.count(),
+    prisma.message.count(),
+    prisma.roomMessage.count(),
+    prisma.statusUpdate.count(),
+  ]);
+
+  const roomMemberships = await prisma.roomMembership.count();
+
+  return {
+    users,
+    sessions,
+    conversations,
+    rooms,
+    messages,
+    roomMessages,
+    statuses,
+    roomMemberships,
+  };
+}
+
+export async function searchDirectory(query: string) {
+  const value = query.trim();
+  if (!value) {
+    return { users: await listUsers(), rooms: await listRooms() };
+  }
+
+  const [users, rooms] = await Promise.all([
+    prisma.user.findMany({
+      where: {
+        OR: [
+          { username: { contains: value, mode: "insensitive" } },
+          { displayName: { contains: value, mode: "insensitive" } },
+          { bio: { contains: value, mode: "insensitive" } },
+        ],
+      },
+      orderBy: { updatedAt: "desc" },
+      take: 20,
+    }),
+    prisma.room.findMany({
+      where: {
+        OR: [
+          { name: { contains: value, mode: "insensitive" } },
+          { description: { contains: value, mode: "insensitive" } },
+          { category: { contains: value, mode: "insensitive" } },
+        ],
+      },
+      orderBy: { updatedAt: "desc" },
+      take: 12,
+      include: { messages: { orderBy: { createdAt: "desc" }, take: 1 }, memberships: true },
+    }),
+  ]);
+
+  return {
+    users: users.map((user) => toUserRecord(user)),
+    rooms: rooms.map((room) => ({
+      id: room.id,
+      slug: room.slug,
+      name: room.name,
+      description: room.description,
+      category: room.category,
+      online: room.memberships.length,
+      members: room.memberships.length,
+      joined: false,
+      lastMessage: room.messages[0]?.body ?? "Say something to start the room.",
+      lastMessageAt: room.updatedAt.toISOString(),
+    })),
+  };
+}
