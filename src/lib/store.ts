@@ -284,11 +284,29 @@ export async function getOrCreateDirectConversation(userId: string, otherUserId:
 }
 
 export async function createMessage(conversationId: string, senderId: string, body: string) {
+  const conversation = await prisma.conversation.findUnique({
+    where: { id: conversationId },
+    include: { participants: true },
+  });
+  if (!conversation) throw new Error("Conversation not found");
+
   const message = await prisma.message.create({
     data: { conversationId, senderId, body },
     include: { sender: true },
   });
   await prisma.conversation.update({ where: { id: conversationId }, data: { updatedAt: new Date() } });
+  await prisma.notification.createMany({
+    data: conversation.participants
+      .filter((participant) => participant.userId !== senderId)
+      .map((participant) => ({
+        userId: participant.userId,
+        type: "message",
+        title: "New direct message",
+        body,
+        href: `/chats/${conversationId}`,
+        conversationId,
+      })),
+  });
   return message;
 }
 
@@ -397,11 +415,28 @@ export async function getRoomBySlug(slug: string, userId?: string) {
 }
 
 export async function createRoomMessage(roomId: string, senderId: string, body: string) {
+  const room = await prisma.room.findUnique({
+    where: { id: roomId },
+    include: { memberships: true },
+  });
+  if (!room) throw new Error("Room not found");
   const message = await prisma.roomMessage.create({
     data: { roomId, senderId, body },
     include: { sender: true },
   });
   await prisma.room.update({ where: { id: roomId }, data: { updatedAt: new Date() } });
+  await prisma.notification.createMany({
+    data: room.memberships
+      .filter((membership) => membership.userId !== senderId)
+      .map((membership) => ({
+        userId: membership.userId,
+        type: "room",
+        title: `New post in ${room.name}`,
+        body,
+        href: `/rooms/${room.slug}`,
+        roomId,
+      })),
+  });
   return toRoomMessagePayload(message);
 }
 
@@ -597,4 +632,28 @@ export async function createReport(input: {
     details: report.details,
     createdAt: report.createdAt.toISOString(),
   } satisfies ReportRecord;
+}
+
+export async function getUnreadNotificationCount(userId: string) {
+  return prisma.notification.count({
+    where: { userId, readAt: null },
+  });
+}
+
+export async function listNotifications(userId: string) {
+  const notifications = await prisma.notification.findMany({
+    where: { userId },
+    orderBy: { createdAt: "desc" },
+    take: 10,
+  });
+
+  return notifications.map((notification) => ({
+    id: notification.id,
+    type: notification.type,
+    title: notification.title,
+    body: notification.body,
+    href: notification.href,
+    createdAt: notification.createdAt.toISOString(),
+    readAt: notification.readAt?.toISOString() ?? null,
+  }));
 }

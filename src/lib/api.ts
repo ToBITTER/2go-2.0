@@ -188,6 +188,10 @@ export async function getRooms() {
   return request<{ rooms: RoomSummary[] }>("/api/rooms");
 }
 
+export async function getNotifications() {
+  return request<{ unreadCount: number; notifications: Array<{ id: string; type: string; title: string; body: string; href?: string | null; createdAt: string; readAt: string | null }> }>("/api/notifications");
+}
+
 export async function getUsers() {
   return request<{ users: AuthUser[] }>("/api/users");
 }

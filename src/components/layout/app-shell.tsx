@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 import { mainNavigation, utilityNavigation, type NavigationItem } from "@/data/navigation";
 import { ChevronRight, LogOut, Star, UserCircle2 } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
-import { getMe, logoutUser, type AuthUser } from "@/lib/api";
+import { getMe, getNotifications, logoutUser, type AuthUser } from "@/lib/api";
 
 type AppShellProps = {
   title: string;
@@ -27,6 +27,7 @@ export function AppShell({
   const router = useRouter();
   const [user, setUser] = useState<AuthUser | null>(null);
   const [authReady, setAuthReady] = useState(false);
+  const [unreadNotifications, setUnreadNotifications] = useState(0);
   const utilityItems: NavigationItem[] = utilityNavigation;
 
   useEffect(() => {
@@ -41,6 +42,18 @@ export function AppShell({
       }
     })();
   }, []);
+
+  useEffect(() => {
+    if (!user) return;
+    void (async () => {
+      try {
+        const payload = await getNotifications();
+        setUnreadNotifications(payload.unreadCount);
+      } catch {
+        setUnreadNotifications(0);
+      }
+    })();
+  }, [user]);
 
   useEffect(() => {
     if (!authReady) return;
@@ -127,6 +140,9 @@ export function AppShell({
                     {user.online ? "Online" : "Offline"}
                   </span>
                   <span>{user.interests.length} interests</span>
+                </div>
+                <div className="mt-3 rounded-full border border-white/10 bg-[#13202b] px-3 py-2 text-xs text-[#dbe6ee]">
+                  {unreadNotifications ? `${unreadNotifications} new notifications` : "No new notifications"}
                 </div>
               </div>
             ) : null}
