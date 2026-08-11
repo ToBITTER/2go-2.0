@@ -1,5 +1,6 @@
 import { ArrowRight, CircleDot, MessageSquareText, Users } from "lucide-react";
 import { AppShell } from "@/components/layout/app-shell";
+import { StatusComposer } from "@/components/status-composer";
 import { cookies } from "next/headers";
 import { getUserFromSession, listStatusUpdates, type StatusUpdate } from "@/lib/store";
 import Link from "next/link";
@@ -75,6 +76,7 @@ export default async function Page() {
           </div>
 
           <div className="grid gap-4">
+            {user ? <StatusComposer /> : null}
             <article className="rounded-[24px] border border-white/10 bg-[#0d1720] p-5 shadow-soft">
               <p className="text-xs uppercase tracking-[0.35em] text-[#8fb7d5]">Live now</p>
               <div className="mt-4 space-y-3">
