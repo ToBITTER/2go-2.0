@@ -52,6 +52,13 @@ export type RoomMessage = {
   sender: Pick<UserRecord, "id" | "username" | "displayName" | "rank" | "picture">;
 };
 
+export type StatusUpdate = {
+  id: string;
+  body: string;
+  createdAt: string;
+  user: Pick<UserRecord, "id" | "username" | "displayName" | "rank" | "picture">;
+};
+
 export const defaultInterests = ["Football", "Music", "Tech", "Gaming", "Movies", "Fashion", "Campus", "Business", "Relationships", "Faith", "Memes", "Anime", "Sports"];
 
 function rankFor(interests: string[]) {
@@ -424,4 +431,45 @@ export async function getRoomBySlugForUser(slug: string, userId: string) {
     },
   });
   return room;
+}
+
+export async function createStatusUpdate(userId: string, body: string) {
+  const status = await prisma.statusUpdate.create({
+    data: { userId, body },
+    include: { user: true },
+  });
+
+  return {
+    id: status.id,
+    body: status.body,
+    createdAt: status.createdAt.toISOString(),
+    user: {
+      id: status.user.id,
+      username: status.user.username,
+      displayName: status.user.displayName,
+      rank: status.user.rank,
+      picture: status.user.picture,
+    },
+  } satisfies StatusUpdate;
+}
+
+export async function listStatusUpdates() {
+  const statuses = await prisma.statusUpdate.findMany({
+    orderBy: { createdAt: "desc" },
+    take: 8,
+    include: { user: true },
+  });
+
+  return statuses.map((status) => ({
+    id: status.id,
+    body: status.body,
+    createdAt: status.createdAt.toISOString(),
+    user: {
+      id: status.user.id,
+      username: status.user.username,
+      displayName: status.user.displayName,
+      rank: status.user.rank,
+      picture: status.user.picture,
+    },
+  })) satisfies StatusUpdate[];
 }

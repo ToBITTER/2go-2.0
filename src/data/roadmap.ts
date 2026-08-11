@@ -41,7 +41,7 @@ export const roadmapPhases: RoadmapPhase[] = [
     ],
   },
   {
-    status: "upcoming",
+    status: "in-progress",
     title: "Presence + Rooms",
     summary: "Make the app feel alive with online state and public rooms.",
     items: [

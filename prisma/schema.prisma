@@ -25,6 +25,7 @@ model User {
   messages Message[]
   roomMessages RoomMessage[]
   roomMemberships RoomMembership[]
+  statusUpdates StatusUpdate[]
 
   @@index([email])
   @@index([username])
@@ -118,4 +119,15 @@ model RoomMembership {
   @@unique([roomId, userId])
   @@index([roomId])
   @@index([userId])
+}
+
+model StatusUpdate {
+  id        String   @id @default(cuid())
+  userId    String
+  body      String
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
 }

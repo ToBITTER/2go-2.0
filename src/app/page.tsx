@@ -1,12 +1,13 @@
 import { ArrowRight, CircleDot, MessageSquareText, Users } from "lucide-react";
 import { AppShell } from "@/components/layout/app-shell";
 import { cookies } from "next/headers";
-import { getUserFromSession } from "@/lib/store";
+import { getUserFromSession, listStatusUpdates, type StatusUpdate } from "@/lib/store";
 import Link from "next/link";
 
 export default async function Page() {
   const cookieStore = await cookies();
   const user = await getUserFromSession(cookieStore.get("2go_session")?.value);
+  const statuses: StatusUpdate[] = await listStatusUpdates().catch(() => []);
 
   return (
     <AppShell title="Home" subtitle="Who's around?" actionLabel="Sign up" actionHref="/auth/sign-up">
@@ -77,15 +78,29 @@ export default async function Page() {
             <article className="rounded-[24px] border border-white/10 bg-[#0d1720] p-5 shadow-soft">
               <p className="text-xs uppercase tracking-[0.35em] text-[#8fb7d5]">Live now</p>
               <div className="mt-4 space-y-3">
-                {[
-                  "Someone from your circle",
-                  "A room with new chatter",
-                  "A friend who just came online",
-                ].map((item) => (
-                  <div key={item} className="rounded-[16px] border border-white/10 bg-[#13202b] px-4 py-3 text-sm text-[#dbe6ee]">
-                    {item}
-                  </div>
-                ))}
+                {statuses.length ? (
+                  statuses.map((status) => (
+                    <div key={status.id} className="rounded-[16px] border border-white/10 bg-[#13202b] px-4 py-3">
+                      <div className="flex items-center justify-between gap-3">
+                        <p className="text-sm font-semibold text-white">{status.user.displayName}</p>
+                        <p className="text-xs text-[#8fb7d5]">@{status.user.username}</p>
+                      </div>
+                      <p className="mt-2 text-sm leading-6 text-[#dbe6ee]">{status.body}</p>
+                    </div>
+                  ))
+                ) : (
+                  <>
+                    <div className="rounded-[16px] border border-white/10 bg-[#13202b] px-4 py-3 text-sm text-[#dbe6ee]">
+                      Someone from your circle
+                    </div>
+                    <div className="rounded-[16px] border border-white/10 bg-[#13202b] px-4 py-3 text-sm text-[#dbe6ee]">
+                      A room with new chatter
+                    </div>
+                    <div className="rounded-[16px] border border-white/10 bg-[#13202b] px-4 py-3 text-sm text-[#dbe6ee]">
+                      A friend who just came online
+                    </div>
+                  </>
+                )}
               </div>
             </article>
 
