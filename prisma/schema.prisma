@@ -26,6 +26,8 @@ model User {
   roomMessages RoomMessage[]
   roomMemberships RoomMembership[]
   statusUpdates StatusUpdate[]
+  reports Report[] @relation("ReporterReports")
+  reportedAgainst Report[] @relation("ReportedUserReports")
 
   @@index([email])
   @@index([username])
@@ -130,4 +132,23 @@ model StatusUpdate {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId, createdAt])
+}
+
+model Report {
+  id         String   @id @default(cuid())
+  reporterId String
+  reportedId String?
+  conversationId String?
+  roomId     String?
+  reason     String
+  details    String?
+  createdAt  DateTime @default(now())
+
+  reporter User @relation("ReporterReports", fields: [reporterId], references: [id], onDelete: Cascade)
+  reportedUser User? @relation("ReportedUserReports", fields: [reportedId], references: [id], onDelete: SetNull)
+
+  @@index([reporterId, createdAt])
+  @@index([reportedId, createdAt])
+  @@index([conversationId, createdAt])
+  @@index([roomId, createdAt])
 }

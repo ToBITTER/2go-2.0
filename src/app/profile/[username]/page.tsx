@@ -4,6 +4,7 @@ import Link from "next/link";
 import { getProfile } from "@/lib/api";
 import { notFound } from "next/navigation";
 import { headers } from "next/headers";
+import { ReportButton } from "@/components/report-button";
 
 type Props = {
   params: Promise<{
@@ -47,6 +48,9 @@ export default async function PublicProfilePage({ params }: Props) {
               >
                 Message them
               </Link>
+            </div>
+            <div className="mt-3">
+              <ReportButton reportedUsername={payload.user.username} />
             </div>
           </section>
         </div>

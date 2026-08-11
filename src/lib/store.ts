@@ -59,6 +59,17 @@ export type StatusUpdate = {
   user: Pick<UserRecord, "id" | "username" | "displayName" | "rank" | "picture">;
 };
 
+export type ReportRecord = {
+  id: string;
+  reporterId: string;
+  reportedId?: string | null;
+  conversationId?: string | null;
+  roomId?: string | null;
+  reason: string;
+  details?: string | null;
+  createdAt: string;
+};
+
 export const defaultInterests = ["Football", "Music", "Tech", "Gaming", "Movies", "Fashion", "Campus", "Business", "Relationships", "Faith", "Memes", "Anime", "Sports"];
 
 function rankFor(interests: string[]) {
@@ -546,4 +557,44 @@ export async function searchDirectory(query: string) {
       lastMessageAt: room.updatedAt.toISOString(),
     })),
   };
+}
+
+export async function createReport(input: {
+  reporterId: string;
+  reason: string;
+  details?: string;
+  reportedUsername?: string;
+  conversationId?: string;
+  roomSlug?: string;
+}) {
+  let reportedId: string | undefined;
+  if (input.reportedUsername) {
+    const user = await prisma.user.findUnique({ where: { username: input.reportedUsername }, select: { id: true } });
+    reportedId = user?.id;
+  }
+  const roomId = input.roomSlug
+    ? (await prisma.room.findUnique({ where: { slug: input.roomSlug }, select: { id: true } }))?.id
+    : undefined;
+
+  const report = await prisma.report.create({
+    data: {
+      reporterId: input.reporterId,
+      reportedId,
+      conversationId: input.conversationId,
+      roomId,
+      reason: input.reason,
+      details: input.details,
+    },
+  });
+
+  return {
+    id: report.id,
+    reporterId: report.reporterId,
+    reportedId: report.reportedId,
+    conversationId: report.conversationId,
+    roomId: report.roomId,
+    reason: report.reason,
+    details: report.details,
+    createdAt: report.createdAt.toISOString(),
+  } satisfies ReportRecord;
 }
