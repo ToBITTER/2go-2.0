@@ -5,6 +5,7 @@ import { useParams, useRouter } from "next/navigation";
 import { ChevronLeft } from "lucide-react";
 import { AppShell } from "@/components/layout/app-shell";
 import { getChats, getConversation, getMe, sendMessage, type AuthUser, type ChatMessage, type ChatSummary } from "@/lib/api";
+import { getSocket } from "@/lib/realtime";
 
 export default function ChatThreadPage() {
   const params = useParams<{ id: string }>();
@@ -15,6 +16,7 @@ export default function ChatThreadPage() {
   const [composer, setComposer] = useState("");
   const [pending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
+  const [remoteTyping, setRemoteTyping] = useState<string | null>(null);
 
   const chatId = params.id;
   const activeChat = useMemo(() => chats.find((chat) => chat.id === chatId) ?? null, [chatId, chats]);
@@ -48,6 +50,34 @@ export default function ChatThreadPage() {
     return () => window.clearInterval(handle);
   }, [chatId]);
 
+  useEffect(() => {
+    const socket = getSocket();
+    if (!socket) return;
+    const onTyping = (payload: { conversationId: string; username: string; isTyping: boolean }) => {
+      if (payload.conversationId !== chatId) return;
+      setRemoteTyping(payload.isTyping ? payload.username : null);
+    };
+    socket.on("chat:typing", onTyping);
+    return () => {
+      socket.off("chat:typing", onTyping);
+    };
+  }, [chatId]);
+
+  useEffect(() => {
+    const socket = getSocket();
+    if (!socket) return;
+    if (!composer.trim()) {
+      socket.emit("chat:typing", { conversationId: chatId, isTyping: false });
+      return;
+    }
+    socket.emit("chat:typing", { conversationId: chatId, isTyping: true });
+    const handle = window.setTimeout(() => socket.emit("chat:typing", { conversationId: chatId, isTyping: false }), 900);
+    return () => {
+      window.clearTimeout(handle);
+      socket.emit("chat:typing", { conversationId: chatId, isTyping: false });
+    };
+  }, [chatId, composer]);
+
   function send() {
     if (!composer.trim()) return;
     const body = composer.trim();
@@ -79,6 +109,7 @@ export default function ChatThreadPage() {
             <p className="text-[10px] uppercase tracking-[0.32em] text-[#8fb7d5]">Conversation</p>
             <h2 className="truncate text-lg font-semibold text-white">{activeChat?.title ?? "Chat"}</h2>
             <p className="truncate text-xs text-[#b9c6d3]">{activeChat?.subtitle ?? "Loading thread..."}</p>
+            {remoteTyping ? <p className="mt-1 text-xs text-[#8fb7d5]">{remoteTyping} is typing...</p> : null}
           </div>
 
           <div className="space-y-3 px-3 py-3">

@@ -5,6 +5,7 @@ import Link from "next/link";
 import { AppShell } from "@/components/layout/app-shell";
 import { SectionHeading } from "@/components/section-heading";
 import { getRooms, getRoom, sendRoomMessage, type RoomMessage, type RoomSummary } from "@/lib/api";
+import { getSocket } from "@/lib/realtime";
 
 export default function RoomsPage() {
   const [rooms, setRooms] = useState<RoomSummary[]>([]);
@@ -52,15 +53,35 @@ export default function RoomsPage() {
   }, [activeSlug]);
 
   useEffect(() => {
+    const socket = getSocket();
+    if (!socket || !activeSlug) return;
+    socket.emit("room:join", { roomSlug: activeSlug });
+    const onTyping = (payload: { roomSlug: string; username: string; isTyping: boolean }) => {
+      if (payload.roomSlug !== activeSlug) return;
+      setTyping(payload.isTyping);
+    };
+    socket.on("room:typing", onTyping);
+    return () => {
+      socket.off("room:typing", onTyping);
+    };
+  }, [activeSlug]);
+
+  useEffect(() => {
     if (!activeSlug) return;
     const trimmed = composer.trim();
+    const socket = getSocket();
     if (!trimmed) {
+      socket?.emit("room:typing", { roomSlug: activeSlug, isTyping: false });
       setTyping(false);
       return;
     }
     setTyping(true);
+    socket?.emit("room:typing", { roomSlug: activeSlug, isTyping: true });
     const handle = window.setTimeout(() => setTyping(false), 900);
-    return () => window.clearTimeout(handle);
+    return () => {
+      window.clearTimeout(handle);
+      socket?.emit("room:typing", { roomSlug: activeSlug, isTyping: false });
+    };
   }, [composer, activeSlug]);
 
   const activeRoom = useMemo(() => rooms.find((room) => room.slug === activeSlug) ?? null, [activeSlug, rooms]);
@@ -72,6 +93,7 @@ export default function RoomsPage() {
     startTransition(async () => {
       const payload = await sendRoomMessage(activeSlug, body);
       setMessages((current) => [...current, payload.message]);
+      getSocket()?.emit("room:typing", { roomSlug: activeSlug, isTyping: false });
     });
   }
 
