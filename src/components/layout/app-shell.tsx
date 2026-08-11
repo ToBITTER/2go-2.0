@@ -164,11 +164,16 @@ export function AppShell({
           </div>
         </aside>
 
-        <section className="min-w-0 flex-1 pb-20 lg:pb-0">
+        <section className="min-w-0 flex-1 pb-24 lg:pb-0">
           <div className="mb-4 flex items-center justify-between rounded-[18px] border border-white/10 bg-[#13202b] px-4 py-3 shadow-soft lg:hidden">
-            <div>
-              <p className="text-[11px] uppercase tracking-[0.3em] text-[#8fb7d5]">2go 2.0</p>
-              <p className="font-semibold text-white">{title}</p>
+            <div className="flex items-center gap-3">
+              <div className="grid h-10 w-10 place-items-center overflow-hidden rounded-[14px] bg-[#e9f0f7]">
+                <Image src="/brand/2go-mark.svg" alt="" width={40} height={40} className="h-full w-full object-contain" />
+              </div>
+              <div>
+                <p className="text-[11px] uppercase tracking-[0.3em] text-[#8fb7d5]">2go 2.0</p>
+                <p className="font-semibold text-white">{title}</p>
+              </div>
             </div>
             {authReady && user ? (
               <button

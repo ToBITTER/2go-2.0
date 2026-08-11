@@ -11,6 +11,7 @@ export default function RoomsPage() {
   const [activeSlug, setActiveSlug] = useState<string | null>(null);
   const [messages, setMessages] = useState<RoomMessage[]>([]);
   const [composer, setComposer] = useState("");
+  const [typing, setTyping] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
@@ -50,6 +51,18 @@ export default function RoomsPage() {
     return () => window.clearInterval(handle);
   }, [activeSlug]);
 
+  useEffect(() => {
+    if (!activeSlug) return;
+    const trimmed = composer.trim();
+    if (!trimmed) {
+      setTyping(false);
+      return;
+    }
+    setTyping(true);
+    const handle = window.setTimeout(() => setTyping(false), 900);
+    return () => window.clearTimeout(handle);
+  }, [composer, activeSlug]);
+
   const activeRoom = useMemo(() => rooms.find((room) => room.slug === activeSlug) ?? null, [activeSlug, rooms]);
 
   function send() {
@@ -67,16 +80,12 @@ export default function RoomsPage() {
       <div className="space-y-5 md:space-y-6">
         <SectionHeading eyebrow="Communities" title="Rooms that feel alive" description="Pick a room and step into the conversation." />
         {error ? (
-          <div className="rounded-[18px] border border-red-400/20 bg-red-500/10 px-4 py-3 text-sm text-red-100">
-            {error}
-          </div>
+          <div className="rounded-[18px] border border-red-400/20 bg-red-500/10 px-4 py-3 text-sm text-red-100">{error}</div>
         ) : null}
         <div className="grid gap-4 lg:grid-cols-[0.34fr_0.66fr]">
           <aside className="space-y-3 rounded-[22px] border border-white/10 bg-[#13202b] p-4 shadow-soft md:p-5">
             {loading ? (
-              <div className="rounded-[18px] border border-white/10 bg-[#0d1720] p-4 text-sm text-[#b9c6d3]">
-                Loading rooms...
-              </div>
+              <div className="rounded-[18px] border border-white/10 bg-[#0d1720] p-4 text-sm text-[#b9c6d3]">Loading rooms...</div>
             ) : rooms.length ? (
               rooms.map((room) => (
                 <Link
@@ -92,7 +101,7 @@ export default function RoomsPage() {
                       <p className="text-lg font-semibold text-white">{room.name}</p>
                       <p className="mt-2 text-sm leading-6 text-[#b9c6d3]">{room.description}</p>
                     </div>
-                    <p className="shrink-0 text-xs text-[#8fb7d5]">{room.members} joined</p>
+                    <p className="shrink-0 text-xs text-[#8fb7d5]">{room.online} online</p>
                   </div>
                   <div className="mt-4 flex items-center justify-between text-sm">
                     <p className="text-[#dbe6ee]">{room.category}</p>
@@ -109,10 +118,21 @@ export default function RoomsPage() {
 
           <section className="min-w-0 rounded-[22px] border border-white/10 bg-[#13202b] shadow-soft">
             <div className="border-b border-white/10 p-4 md:p-5">
-              <p className="text-xs uppercase tracking-[0.3em] text-[#8fb7d5]">Live room</p>
-              <h2 className="mt-2 text-2xl font-semibold text-white">{activeRoom?.name ?? "Pick a room"}</h2>
-              <p className="mt-1 text-sm text-[#b9c6d3]">{activeRoom?.description ?? "A live room will show up here."}</p>
+              <div className="flex items-center justify-between gap-3">
+                <div className="min-w-0">
+                  <p className="text-xs uppercase tracking-[0.3em] text-[#8fb7d5]">Live room</p>
+                  <h2 className="truncate text-2xl font-semibold text-white">{activeRoom?.name ?? "Pick a room"}</h2>
+                  <p className="mt-1 text-sm text-[#b9c6d3]">{activeRoom?.description ?? "A live room will show up here."}</p>
+                </div>
+                {activeRoom ? (
+                  <div className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs text-[#dbe6ee]">
+                    {activeRoom.members} people
+                  </div>
+                ) : null}
+              </div>
+              {typing ? <p className="mt-2 text-xs text-[#8fb7d5]">You&apos;re typing...</p> : null}
             </div>
+
             <div className="max-h-[58vh] space-y-3 overflow-y-auto p-4 md:p-5">
               {!activeSlug ? (
                 <div className="rounded-[18px] border border-dashed border-white/10 bg-[#0d1720] p-6 text-sm text-[#b9c6d3]">
@@ -134,6 +154,7 @@ export default function RoomsPage() {
                 </div>
               )}
             </div>
+
             <div className="border-t border-white/10 p-3 md:p-4">
               <div className="flex flex-col gap-3 sm:flex-row">
                 <input

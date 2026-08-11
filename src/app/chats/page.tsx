@@ -197,7 +197,9 @@ export default function ChatsPage() {
                           <p className="font-semibold text-white">{chat.title}</p>
                           <p className="mt-1 line-clamp-1 text-sm text-[#b9c6d3]">{chat.lastMessage}</p>
                         </div>
-                        <span className="shrink-0 text-xs text-[#8fb7d5]">{unread ? `${unread} new` : "Seen"}</span>
+                        <span className={`shrink-0 rounded-full px-2 py-1 text-[11px] ${unread ? "bg-[#2f7fb8]/15 text-[#9fd2ff]" : "bg-white/5 text-[#b9c6d3]"}`}>
+                          {unread ? `${unread} new` : "Seen"}
+                        </span>
                       </div>
                       <div className="mt-3 flex items-center justify-between gap-2 text-xs text-[#b9c6d3]">
                         <span>{chat.subtitle}</span>

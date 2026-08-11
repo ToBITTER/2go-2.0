@@ -86,7 +86,11 @@ export default function DiscoverPage() {
                       </div>
                     </div>
                     <div className="mt-3">
-                      <span className={`inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs ${user.online ? "bg-emerald-400/10 text-emerald-300" : "bg-white/5 text-[#b9c6d3]"}`}>
+                      <span
+                        className={`inline-flex w-full items-center justify-center gap-2 rounded-full px-3 py-2 text-xs font-semibold ${
+                          user.online ? "bg-emerald-400/10 text-emerald-300" : "bg-white/5 text-[#b9c6d3]"
+                        }`}
+                      >
                         <span className={`h-2 w-2 rounded-full ${user.online ? "bg-emerald-300" : "bg-[#7f95a9]"}`} />
                         {user.online ? "Online now" : "Offline"}
                       </span>

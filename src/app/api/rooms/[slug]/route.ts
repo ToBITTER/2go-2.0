@@ -9,6 +9,7 @@ import {
   listRoomMessages,
   isRoomJoined,
 } from "@/lib/store";
+import { prisma } from "@/lib/db";
 
 export async function GET(_request: NextRequest, { params }: { params: Promise<{ slug: string }> }) {
   const cookieStore = await cookies();
@@ -20,6 +21,7 @@ export async function GET(_request: NextRequest, { params }: { params: Promise<{
   if (!room) return NextResponse.json({ error: "Room not found" }, { status: 404 });
   const messages = await listRoomMessages(room.id);
   const joined = await isRoomJoined(room.id, user.id);
+  const members = await prisma.roomMembership.count({ where: { roomId: room.id } });
 
   return NextResponse.json({
     room: {
@@ -28,8 +30,8 @@ export async function GET(_request: NextRequest, { params }: { params: Promise<{
       name: room.name,
       description: room.description,
       category: room.category,
-      online: room.memberships.length,
-      members: room.memberships.length,
+      online: members,
+      members,
       joined,
       lastMessage: messages.at(-1)?.body ?? "Say something to start the room.",
       lastMessageAt: room.updatedAt.toISOString(),
