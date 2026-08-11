@@ -192,6 +192,12 @@ export async function getUsers() {
   return request<{ users: AuthUser[] }>("/api/users");
 }
 
+export async function searchDirectory(query: string) {
+  const params = new URLSearchParams();
+  if (query.trim()) params.set("q", query.trim());
+  return request<{ users: AuthUser[]; rooms: RoomSummary[] }>(`/api/search${params.toString() ? `?${params.toString()}` : ""}`);
+}
+
 export async function getRoom(slug: string) {
   return request<{ room: RoomSummary; messages: RoomMessage[] }>(`/api/rooms/${encodeURIComponent(slug)}`);
 }

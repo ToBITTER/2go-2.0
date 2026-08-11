@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { AppShell } from "@/components/layout/app-shell";
 import { SectionHeading } from "@/components/section-heading";
-import { getRooms, getUsers, type AuthUser, type RoomSummary } from "@/lib/api";
+import { getRooms, getUsers, searchDirectory, type AuthUser, type RoomSummary } from "@/lib/api";
 
 export default function DiscoverPage() {
   const [users, setUsers] = useState<AuthUser[]>([]);
@@ -27,27 +27,25 @@ export default function DiscoverPage() {
     })();
   }, []);
 
-  const filteredUsers = useMemo(() => {
-    const value = query.trim().toLowerCase();
-    if (!value) return users;
-    return users.filter((user) =>
-      [user.username, user.displayName, user.bio, user.rank, ...(user.interests ?? [])]
-        .join(" ")
-        .toLowerCase()
-        .includes(value),
-    );
-  }, [query, users]);
+  useEffect(() => {
+    const value = query.trim();
+    if (!value) return;
+    const handle = window.setTimeout(() => {
+      void (async () => {
+        try {
+          const payload = await searchDirectory(value);
+          setUsers(payload.users);
+          setRooms(payload.rooms);
+        } catch (err) {
+          setError(err instanceof Error ? err.message : "Unable to search directory");
+        }
+      })();
+    }, 250);
+    return () => window.clearTimeout(handle);
+  }, [query]);
 
-  const filteredRooms = useMemo(() => {
-    const value = query.trim().toLowerCase();
-    if (!value) return rooms;
-    return rooms.filter((room) =>
-      [room.name, room.description, room.category, room.lastMessage].join(" ").toLowerCase().includes(value),
-    );
-  }, [query, rooms]);
-
-  const onlineCount = filteredUsers.filter((user) => user.online).length;
-  const topRanks = [...filteredUsers]
+  const onlineCount = users.filter((user) => user.online).length;
+  const topRanks = [...users]
     .sort((a, b) => a.rank.localeCompare(b.rank) || a.displayName.localeCompare(b.displayName))
     .slice(0, 4);
 
@@ -74,7 +72,7 @@ export default function DiscoverPage() {
                 {onlineCount} online
               </span>
               <span className="rounded-full border border-white/10 bg-[#0d1720] px-3 py-2 text-xs text-[#dbe6ee]">
-                {filteredUsers.length} people
+                {users.length} people
               </span>
             </div>
           </div>
@@ -88,8 +86,8 @@ export default function DiscoverPage() {
                 <div className="rounded-[18px] border border-dashed border-white/10 bg-[#0d1720] p-6 text-sm text-[#b9c6d3]">
                   Loading people...
                 </div>
-              ) : filteredUsers.length ? (
-                filteredUsers.map((user) => (
+              ) : users.length ? (
+                users.map((user) => (
                   <article key={user.id} className="rounded-[18px] border border-white/10 bg-[#0d1720] p-4">
                     <div className="flex items-center gap-3">
                       <div className="grid h-11 w-11 place-items-center rounded-[14px] bg-[#e7f0f7] text-[#163042]">
@@ -177,8 +175,8 @@ export default function DiscoverPage() {
                   <div className="rounded-[18px] border border-dashed border-white/10 bg-[#0d1720] p-6 text-sm text-[#b9c6d3]">
                     Loading rooms...
                   </div>
-                ) : filteredRooms.length ? (
-                  filteredRooms.map((room) => (
+                ) : rooms.length ? (
+                  rooms.map((room) => (
                     <Link
                       key={room.slug}
                       href={`/rooms/${encodeURIComponent(room.slug)}`}
