@@ -4,10 +4,11 @@ import { useEffect, useMemo, useState, useTransition } from "react";
 import { useSearchParams } from "next/navigation";
 import { AppShell } from "@/components/layout/app-shell";
 import { SectionHeading } from "@/components/section-heading";
-import { getChats, getConversation, sendMessage, startChatWithUser, type ChatMessage, type ChatSummary } from "@/lib/api";
+import { getChats, getConversation, getMe, sendMessage, startChatWithUser, type ChatMessage, type ChatSummary, type AuthUser } from "@/lib/api";
 
 export default function ChatsPage() {
   const searchParams = useSearchParams();
+  const [me, setMe] = useState<AuthUser | null>(null);
   const [chats, setChats] = useState<ChatSummary[]>([]);
   const [activeChatId, setActiveChatId] = useState<string | null>(null);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
@@ -31,6 +32,15 @@ export default function ChatsPage() {
     }
   }
 
+  async function loadConversation(chatId: string) {
+    try {
+      const payload = await getConversation(chatId);
+      setMessages(payload.conversation.messages);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Unable to load conversation");
+    }
+  }
+
   function readSeenCounts() {
     try {
       const raw = window.localStorage.getItem("2go_chat_seen_counts");
@@ -45,14 +55,16 @@ export default function ChatsPage() {
     window.localStorage.setItem("2go_chat_seen_counts", JSON.stringify(next));
   }
 
-  async function loadConversation(chatId: string) {
-    try {
-      const payload = await getConversation(chatId);
-      setMessages(payload.conversation.messages);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Unable to load conversation");
-    }
-  }
+  useEffect(() => {
+    void (async () => {
+      try {
+        const payload = await getMe();
+        setMe(payload.user);
+      } catch {
+        setMe(null);
+      }
+    })();
+  }, []);
 
   useEffect(() => {
     setSeenCounts(readSeenCounts());
@@ -133,14 +145,14 @@ export default function ChatsPage() {
       <div className="space-y-5 md:space-y-6">
         <SectionHeading
           eyebrow="Messaging"
-          title="Your conversations"
-          description="Pick a conversation from the list, then read and reply in the thread."
+          title="Direct messages"
+          description="Pick a thread, open it, and keep the conversation moving."
         />
 
-        <div className="grid gap-4 lg:grid-cols-[0.36fr_0.64fr]">
-          <aside className="space-y-4 rounded-[22px] border border-white/10 bg-[#13202b] p-4 shadow-soft md:p-5">
-            <div className="rounded-[18px] border border-white/10 bg-[#0d1720] p-3">
-              <p className="text-xs uppercase tracking-[0.25em] text-[#8fb7d5]">Start a chat</p>
+        <div className="grid gap-4 lg:grid-cols-[0.34fr_0.66fr]">
+          <aside className="space-y-4 rounded-[24px] border border-white/10 bg-[#13202b] p-4 shadow-soft md:p-5">
+            <div className="rounded-[20px] border border-white/10 bg-[#0d1720] p-3">
+              <p className="text-[11px] uppercase tracking-[0.28em] text-[#8fb7d5]">New message</p>
               <div className="mt-3 flex gap-2">
                 <input
                   value={usernameQuery}
@@ -157,11 +169,10 @@ export default function ChatsPage() {
                   Open
                 </button>
               </div>
-              <p className="mt-2 text-xs text-[#b9c6d3]">Type a username to open or create a thread.</p>
             </div>
 
             <div className="flex items-center justify-between">
-              <p className="text-xs uppercase tracking-[0.3em] text-[#8fb7d5]">Conversations</p>
+              <p className="text-xs uppercase tracking-[0.3em] text-[#8fb7d5]">Inbox</p>
               <p className="text-xs text-[#b9c6d3]">{loading ? "Loading..." : `${chats.length} chats`}</p>
             </div>
 
@@ -171,6 +182,7 @@ export default function ChatsPage() {
               <div className="space-y-2">
                 {chats.map((chat) => {
                   const active = activeChatId === chat.id;
+                  const unread = unreadCountFor(chat);
                   return (
                     <button
                       key={chat.id}
@@ -181,15 +193,16 @@ export default function ChatsPage() {
                       }`}
                     >
                       <div className="flex items-start justify-between gap-3">
-                        <div>
+                        <div className="min-w-0">
                           <p className="font-semibold text-white">{chat.title}</p>
                           <p className="mt-1 line-clamp-1 text-sm text-[#b9c6d3]">{chat.lastMessage}</p>
                         </div>
-                        <span className="shrink-0 text-xs text-[#8fb7d5]">
-                          {unreadCountFor(chat) ? `${unreadCountFor(chat)} new` : "Seen"}
-                        </span>
+                        <span className="shrink-0 text-xs text-[#8fb7d5]">{unread ? `${unread} new` : "Seen"}</span>
                       </div>
-                      <p className="mt-3 text-xs uppercase tracking-[0.28em] text-[#b9c6d3]">{chat.subtitle}</p>
+                      <div className="mt-3 flex items-center justify-between gap-2 text-xs text-[#b9c6d3]">
+                        <span>{chat.subtitle}</span>
+                        <span>{chat.messageCount} msgs</span>
+                      </div>
                     </button>
                   );
                 })}
@@ -201,69 +214,95 @@ export default function ChatsPage() {
             )}
           </aside>
 
-          <section className="min-w-0 rounded-[22px] border border-white/10 bg-[#13202b] shadow-soft">
-            <div className="border-b border-white/10 p-4 md:p-5">
-              <p className="text-xs uppercase tracking-[0.3em] text-[#8fb7d5]">Conversation</p>
-              <h2 className="mt-2 text-2xl font-semibold text-white">{activeChat?.title ?? "Select a conversation"}</h2>
-              <p className="mt-1 text-sm text-[#b9c6d3]">
-                {activeChat?.subtitle ?? "Choose a chat from the list to see the thread."}
-              </p>
-              {typing ? <p className="mt-2 text-xs text-[#8fb7d5]">You’re typing...</p> : null}
+          <section className="min-w-0 overflow-hidden rounded-[24px] border border-white/10 bg-[#13202b] shadow-soft">
+            <div className="sticky top-0 z-10 border-b border-white/10 bg-[#13202b]/95 px-4 py-4 backdrop-blur md:px-5">
+              <div className="flex items-center gap-3">
+                <div className="grid h-11 w-11 place-items-center rounded-[14px] bg-[#e7f0f7] text-[#163042]">
+                  {activeChat?.title?.[0] ?? "D"}
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className="text-xs uppercase tracking-[0.28em] text-[#8fb7d5]">Conversation</p>
+                  <h2 className="truncate text-xl font-semibold text-white">{activeChat?.title ?? "Select a conversation"}</h2>
+                  <p className="truncate text-sm text-[#b9c6d3]">
+                    {activeChat?.subtitle ?? "Choose a chat from the list to see the thread."}
+                  </p>
+                </div>
+                {activeChat ? (
+                  <div className="hidden rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs text-[#dbe6ee] sm:inline-flex">
+                    {unreadCountFor(activeChat) ? `${unreadCountFor(activeChat)} unread` : "Up to date"}
+                  </div>
+                ) : null}
+              </div>
+              {typing ? <p className="mt-3 text-xs text-[#8fb7d5]">Typing...</p> : null}
             </div>
 
-            <div className="min-h-[320px] max-h-[58vh] space-y-3 overflow-y-auto p-4 md:p-5">
+            <div className="max-h-[58vh] space-y-3 overflow-y-auto bg-[linear-gradient(180deg,rgba(13,23,32,0.2),rgba(13,23,32,0.05))] p-4 md:p-5">
               {!activeChatId ? (
-                <div className="grid h-full min-h-[320px] place-items-center rounded-[18px] border border-dashed border-white/10 bg-[#0d1720] p-6 text-center">
+                <div className="grid min-h-[320px] place-items-center rounded-[22px] border border-dashed border-white/10 bg-[#0d1720] p-6 text-center">
                   <div className="max-w-sm space-y-3">
                     <p className="text-lg font-semibold text-white">Pick a conversation</p>
                     <p className="text-sm leading-6 text-[#b9c6d3]">
-                  Select any chat from the left, then your messages and composer will appear here.
+                      Select a thread from the left to start messaging in a cleaner, more familiar DM layout.
                     </p>
                   </div>
                 </div>
               ) : messages.length ? (
-                messages.map((message) => (
-                  <article key={message.id} className="rounded-[18px] border border-white/10 bg-[#0d1720] p-4">
-                    <div className="flex items-center justify-between gap-3">
-                      <div>
-                        <p className="font-semibold text-white">{message.sender.displayName}</p>
-                        <p className="text-xs text-[#8fb7d5]">
-                          @{message.sender.username} · {message.sender.rank}
-                        </p>
-                      </div>
-                      <p className="text-xs text-[#b9c6d3]">
-                        {new Date(message.createdAt).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })}
-                      </p>
+                messages.map((message) => {
+                  const mine = me?.id === message.sender.id;
+                  return (
+                    <div key={message.id} className={`flex ${mine ? "justify-end" : "justify-start"}`}>
+                      <article
+                        className={`max-w-[85%] rounded-[22px] border px-4 py-3 shadow-soft sm:max-w-[70%] ${
+                          mine
+                            ? "border-[#2f7fb8]/40 bg-[#2f7fb8] text-white"
+                            : "border-white/10 bg-[#0d1720] text-[#dbe6ee]"
+                        }`}
+                      >
+                        <div className="flex items-center justify-between gap-4">
+                          <p className={`text-xs font-semibold ${mine ? "text-white/90" : "text-[#8fb7d5]"}`}>
+                            {mine ? "You" : message.sender.displayName}
+                          </p>
+                          <p className={`text-[11px] ${mine ? "text-white/70" : "text-[#b9c6d3]"}`}>
+                            {new Date(message.createdAt).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })}
+                          </p>
+                        </div>
+                        {!mine ? (
+                          <p className="mt-1 text-[11px] uppercase tracking-[0.22em] text-[#8fb7d5]">
+                            @{message.sender.username} · {message.sender.rank}
+                          </p>
+                        ) : null}
+                        <p className="mt-3 text-sm leading-6">{message.body}</p>
+                      </article>
                     </div>
-                    <p className="mt-3 text-sm leading-6 text-[#dbe6ee]">{message.body}</p>
-                  </article>
-                ))
+                  );
+                })
               ) : (
-                <div className="rounded-[18px] border border-dashed border-white/10 bg-[#0d1720] p-6 text-sm text-[#b9c6d3]">
+                <div className="rounded-[22px] border border-dashed border-white/10 bg-[#0d1720] p-6 text-sm text-[#b9c6d3]">
                   This thread is quiet. Drop the first line.
                 </div>
               )}
             </div>
 
-            <div className="border-t border-white/10 p-3 md:p-4">
-              <div className="flex flex-col gap-3 sm:flex-row">
-                <input
+            <div className="border-t border-white/10 bg-[#13202b] p-3 md:p-4">
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-end">
+                <textarea
                   value={composer}
                   onChange={(event) => setComposer(event.target.value)}
-                  placeholder="Type a message..."
+                  placeholder="Message..."
                   disabled={!activeChatId}
-                  className="min-w-0 flex-1 rounded-[14px] border border-white/10 bg-[#0d1720] px-4 py-3 text-sm text-white outline-none placeholder:text-[#7f95a9] disabled:cursor-not-allowed disabled:opacity-60"
+                  rows={1}
+                  className="min-h-[52px] min-w-0 flex-1 resize-none rounded-[18px] border border-white/10 bg-[#0d1720] px-4 py-3 text-sm text-white outline-none placeholder:text-[#7f95a9] disabled:cursor-not-allowed disabled:opacity-60"
                 />
                 <button
                   type="button"
                   disabled={!activeChatId || pending}
                   onClick={onSend}
-                  className="rounded-[14px] bg-[#e7f0f7] px-5 py-3 text-sm font-semibold text-[#163042] sm:min-w-[110px]"
+                  className="rounded-[18px] bg-[#e7f0f7] px-5 py-3 text-sm font-semibold text-[#163042] sm:min-w-[112px]"
                 >
                   {pending ? "Sending..." : "Send"}
                 </button>
               </div>
-              {error ? <p className="mt-3 text-sm text-red-300">{error}</p> : <p className="mt-3 text-sm text-[#b9c6d3]">Choose a chat to reply.</p>}
+              {error ? <p className="mt-3 text-sm text-red-300">{error}</p> : null}
             </div>
           </section>
         </div>
