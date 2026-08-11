@@ -5,7 +5,7 @@ services:
     plan: starter
     rootDir: .
     buildCommand: npm run build
-    startCommand: npm start
+    startCommand: node server.js
     envVars:
       - key: NODE_ENV
         value: production
@@ -17,6 +17,8 @@ services:
         value: ""
       - key: API_BASE_URL
         value: ""
+      - key: CLIENT_ORIGIN
+        value: https://twogo-2-0.onrender.com
 
 databases:
   - name: 2go-2-0-db

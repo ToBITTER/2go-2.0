@@ -18,7 +18,7 @@ type ClientEvents = {
 let socket: Socket<ServerEvents, ClientEvents> | null = null;
 
 function getSocketUrl() {
-  return process.env.NEXT_PUBLIC_SOCKET_URL ?? "http://localhost:4000";
+  return process.env.NEXT_PUBLIC_SOCKET_URL ?? (typeof window !== "undefined" ? window.location.origin : "");
 }
 
 export function getSocket() {
