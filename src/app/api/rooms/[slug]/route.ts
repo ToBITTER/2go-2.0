@@ -75,7 +75,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     message: {
       id: message.id,
       body: message.body,
-      createdAt: message.createdAt.toISOString(),
+      createdAt: message.createdAt,
       sender: {
         id: message.sender.id,
         username: message.sender.username,
