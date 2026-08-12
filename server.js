@@ -1,6 +1,7 @@
 const http = require("http");
 const next = require("next");
 const { Server } = require("socket.io");
+const { setRealtimeServer, emitChatTyping, emitRoomTyping, emitRoomPresence } = require("./src/lib/realtime-server");
 
 const dev = process.env.NODE_ENV !== "production";
 const hostname = "0.0.0.0";
@@ -26,9 +27,11 @@ async function main() {
     },
   });
 
+  setRealtimeServer(io);
+
   io.on("connection", (socket) => {
     socket.on("chat:typing", ({ conversationId, isTyping }) => {
-      socket.to(`chat:${conversationId}`).emit("chat:typing", {
+      emitChatTyping({
         conversationId,
         userId: socket.id,
         username: "Someone",
@@ -38,14 +41,11 @@ async function main() {
 
     socket.on("room:join", ({ roomSlug }) => {
       socket.join(`room:${roomSlug}`);
-      io.to(`room:${roomSlug}`).emit("room:presence", {
-        roomSlug,
-        onlineUserIds: [],
-      });
+      emitRoomPresence({ roomSlug, onlineUserIds: [] });
     });
 
     socket.on("room:typing", ({ roomSlug, isTyping }) => {
-      socket.to(`room:${roomSlug}`).emit("room:typing", {
+      emitRoomTyping({
         roomSlug,
         userId: socket.id,
         username: "Someone",
