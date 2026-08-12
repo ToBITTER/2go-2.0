@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState, useTransition } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { ChevronLeft } from "lucide-react";
+import { ChevronLeft, MessageCircle } from "lucide-react";
 import { AppShell } from "@/components/layout/app-shell";
 import { getChats, getConversation, getMe, sendMessage, type AuthUser, type ChatMessage, type ChatSummary } from "@/lib/api";
 import { getSocket } from "@/lib/realtime";
@@ -105,21 +105,28 @@ export default function ChatThreadPage() {
         </button>
 
         <section className="overflow-hidden rounded-[24px] border border-white/10 bg-[#13202b] shadow-soft">
-          <div className="border-b border-white/10 px-4 py-3">
-            <p className="text-[10px] uppercase tracking-[0.32em] text-[#8fb7d5]">Conversation</p>
-            <h2 className="truncate text-lg font-semibold text-white">{activeChat?.title ?? "Chat"}</h2>
-            <p className="truncate text-xs text-[#b9c6d3]">{activeChat?.subtitle ?? "Loading thread..."}</p>
-            {remoteTyping ? <p className="mt-1 text-xs text-[#8fb7d5]">{remoteTyping} is typing...</p> : null}
+          <div className="border-b border-white/10 px-4 py-4">
+            <div className="flex items-start justify-between gap-3">
+              <div className="min-w-0">
+                <p className="text-[10px] uppercase tracking-[0.32em] text-[#8fb7d5]">Conversation</p>
+                <h2 className="truncate text-lg font-semibold text-white">{activeChat?.title ?? "Chat"}</h2>
+                <p className="truncate text-xs text-[#b9c6d3]">{activeChat?.subtitle ?? "Loading thread..."}</p>
+              </div>
+              <div className="rounded-full border border-white/10 bg-white/5 p-2 text-[#8fb7d5]">
+                <MessageCircle className="h-4 w-4" />
+              </div>
+            </div>
+            {remoteTyping ? <p className="mt-2 text-xs text-[#8fb7d5]">{remoteTyping} is typing...</p> : null}
           </div>
 
-          <div className="space-y-3 px-3 py-3">
+          <div className="max-h-[62vh] space-y-3 overflow-y-auto px-3 py-3">
             {messages.length ? (
               messages.map((message) => {
                 const mine = me?.id === message.sender.id;
                 return (
                   <div key={message.id} className={`flex ${mine ? "justify-end" : "justify-start"}`}>
                     <article
-                      className={`max-w-[84%] rounded-[20px] border px-3 py-2.5 ${
+                      className={`max-w-[84%] rounded-[20px] border px-3 py-2.5 shadow-sm ${
                         mine ? "border-[#2f7fb8]/40 bg-[#2f7fb8] text-white" : "border-white/10 bg-[#0d1720] text-[#dbe6ee]"
                       }`}
                     >
@@ -138,7 +145,7 @@ export default function ChatThreadPage() {
             )}
           </div>
 
-          <div className="sticky bottom-0 border-t border-white/10 bg-[#13202b] p-3">
+          <div className="border-t border-white/10 bg-[#13202b] p-3">
             <textarea
               value={composer}
               onChange={(event) => setComposer(event.target.value)}

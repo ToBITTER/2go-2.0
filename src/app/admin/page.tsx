@@ -14,7 +14,7 @@ const statLabels = [
 ] as const;
 
 export default async function AdminPage() {
-  const stats = await getSystemStats().catch(() => null);
+  const stats = process.env.DATABASE_URL ? await getSystemStats().catch(() => null) : null;
 
   return (
     <AppShell title="Admin" subtitle="System tools live apart from the main social experience.">
@@ -37,15 +37,13 @@ export default async function AdminPage() {
         <div className="rounded-[20px] border border-white/10 bg-[#13202b] p-6 shadow-soft">
           <h2 className="text-xl font-semibold text-white">Phase 6 focus</h2>
           <div className="mt-4 grid gap-3 md:grid-cols-3">
-            {[
-              "Search and discovery hardening",
-              "Moderation and audit visibility",
-              "Production scale and performance cleanup",
-            ].map((item) => (
-              <div key={item} className="rounded-[16px] border border-white/10 bg-[#0d1720] px-4 py-3 text-sm text-[#dbe6ee]">
-                {item}
-              </div>
-            ))}
+            {["Search and discovery hardening", "Moderation and audit visibility", "Production scale and performance cleanup"].map(
+              (item) => (
+                <div key={item} className="rounded-[16px] border border-white/10 bg-[#0d1720] px-4 py-3 text-sm text-[#dbe6ee]">
+                  {item}
+                </div>
+              ),
+            )}
           </div>
         </div>
       </div>
