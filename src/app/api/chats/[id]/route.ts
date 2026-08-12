@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { getUserFromSession, getConversationById, createMessage } from "@/lib/store";
+import { emitConversationMessage } from "@/lib/realtime-server";
 import { z } from "zod";
 
 function toParticipantPayload(participant: {
@@ -69,6 +70,21 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
   if (!parsed.success) return NextResponse.json({ error: "Message cannot be empty" }, { status: 400 });
 
   const message = await createMessage(id, user.id, parsed.data.body.trim());
+  emitConversationMessage({
+    conversationId: id,
+    message: {
+      id: message.id,
+      body: message.body,
+      createdAt: message.createdAt.toISOString(),
+      sender: {
+        id: message.sender.id,
+        username: message.sender.username,
+        displayName: message.sender.displayName,
+        rank: message.sender.rank,
+        picture: message.sender.picture,
+      },
+    },
+  });
   return NextResponse.json({
     message: {
       id: message.id,

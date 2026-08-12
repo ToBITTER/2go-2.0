@@ -10,6 +10,7 @@ import {
   isRoomJoined,
 } from "@/lib/store";
 import { prisma } from "@/lib/db";
+import { emitRoomMessage, emitRoomPresence } from "@/lib/realtime-server";
 
 export async function GET(_request: NextRequest, { params }: { params: Promise<{ slug: string }> }) {
   const cookieStore = await cookies();
@@ -56,6 +57,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
   const body = await request.json().catch(() => null);
   if (body?.action === "join") {
     await joinRoom(room.id, user.id);
+    emitRoomPresence({ roomSlug: slug, onlineUserIds: [] });
     return NextResponse.json({ joined: true });
   }
 
@@ -68,5 +70,20 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
   }
 
   const message = await createRoomMessage(room.id, user.id, parsed.data.body.trim());
+  emitRoomMessage({
+    roomSlug: slug,
+    message: {
+      id: message.id,
+      body: message.body,
+      createdAt: message.createdAt.toISOString(),
+      sender: {
+        id: message.sender.id,
+        username: message.sender.username,
+        displayName: message.sender.displayName,
+        rank: message.sender.rank,
+        picture: message.sender.picture ?? null,
+      },
+    },
+  });
   return NextResponse.json({ message });
 }
